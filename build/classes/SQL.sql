@@ -91,7 +91,7 @@ create table tblUser(
     dateofbirth date,
     identitynumber varchar(255),
     phonenumber varchar(255),
-    `account` varchar(255),
+    `username` varchar(255),
     `password` varchar(255)
 );
 ALTER TABLE tblRentedRoom
@@ -120,7 +120,7 @@ insert into tblroom(price, floor, `type`, rentalflatid) values(1500000, 1, 'Sing
 insert into tblroom(price, floor, `type`, rentalflatid) values(2000000, 2, 'Double', 1);
 insert into tblroom(price, floor, `type`, rentalflatid) values(1500000, 3, 'Single', 1);
 
-insert into tblUser(`name`, address, dateofbirth, identitynumber, phonenumber, `account`, `password`) values('Phạm Kiên', 'Nam Từ Liêm, Hà Nội', 20/07/1999, '0123456789', '0987654321', 'admin', 'admin123');
+insert into tblUser(`name`, address, dateofbirth, identitynumber, phonenumber, `username`, `password`) values('Phạm Kiên', 'Nam Từ Liêm, Hà Nội', 20/07/1999, '0123456789', '0987654321', 'admin', 'admin123');
 
 insert into tblClient(`name`, address, dateofbirth, identitynumber, phonenumber) 
 values('Nguyễn Thắng', 'Thái Bình', 19990128, '0127594736', '098163547'),
@@ -171,3 +171,6 @@ insert into tblBill(`month`, rentingFee, serviceFee, waterNumber, electricityNum
 (6, 1500000, 60000, 2, 140, 1, 1),
 (6, 2000000, 110000, 7, 200, 1, 2),
 (6, 1500000, 50000, 8, 95, 1, 3);
+
+SELECT * FROM tblRentedRoomStaticService;
+UPDATE tblRentedRoomStaticService SET `number` = 5 WHERE id = 1;

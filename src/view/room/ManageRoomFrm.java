@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import model.User;
+import view.Bill.SearchBillFrm;
 
 public class ManageRoomFrm extends JFrame implements ActionListener{
 	private JButton btnAdd, btnEdit, btnDel;
@@ -67,7 +68,7 @@ public class ManageRoomFrm extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if((e.getSource() instanceof JButton)&&(((JButton)e.getSource()).equals(btnEdit))) {
-			(new SearchRoomFrm(user)).setVisible(true);
+			(new SearchBillFrm(user)).setVisible(true);
 			this.dispose();
 		}else {
 			JOptionPane.showMessageDialog(this, "This function is under construction!");
