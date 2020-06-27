@@ -42,6 +42,7 @@ public class BillDAO extends DAO{
             while(rs.next()) {
                 Bill temp = new Bill();
                 temp.setId(rs.getInt("id"));
+                temp.setRoomId(rs.getInt("roomid"));
                 temp.setMonth(rs.getInt("month"));
                 temp.setRentingFee(rs.getFloat("rentingfee"));
                 temp.setServiceFee(rs.getFloat("serviceFee"));
@@ -88,13 +89,14 @@ public class BillDAO extends DAO{
                         }
 
 //                            Tìm phòng đã thuê trong Contract
-                        String sql3 = "SELECT id, roomid FROM tblRentedRoom WHERE contractid = ?";
+                        String sql3 = "SELECT id, roomid FROM tblRentedRoom WHERE contractid = ? and roomid = ?";
                         try{
                             ps = con.prepareStatement(sql3);
                             ps.setInt(1, ct.getId());
+                            ps.setInt(2, temp.getRoomId());
                             ResultSet rs3 = ps.executeQuery();
                             ArrayList<RentedRoom> rra = new ArrayList();
-                            while(rs3.next()){
+                            if(rs3.next()){
                                 RentedRoom rr = new RentedRoom();
                                 rr.setId(rs3.getInt("id"));
 
@@ -205,7 +207,7 @@ public class BillDAO extends DAO{
     public boolean updatePaidBill(Bill b){
         boolean rs = false;
         String sql = "UPDATE tblBill SET billstatus = 1 WHERE id = ?";
-        String sqlMService = "UPDATE tblRentedRoomMonthyService SET number = ? WHERE id = ?";
+        String sqlMService = "UPDATE tblRentedRoomMonthlyService SET number = ? WHERE id = ?";
         try{
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, b.getId());
@@ -220,7 +222,7 @@ public class BillDAO extends DAO{
                 RentedRoom rr = b.getContract().getRooms().get(i);
                 
                 ps.setFloat(1, rr.getRrmService().get(0).getNumber() + b.getElectricityNumber());
-                ps.setInt(2, 0);
+                ps.setInt(2, rr.getRrmService().get(0).getId());
                 qr = ps.executeUpdate();
                 if(qr == 1){
                     rs = true;
@@ -230,7 +232,7 @@ public class BillDAO extends DAO{
                 }
                 
                 ps.setFloat(1, rr.getRrmService().get(1).getNumber() + b.getWaterNumber());
-                ps.setInt(2, 1);
+                ps.setInt(2, rr.getRrmService().get(1).getId());
                 qr = ps.executeUpdate();
                 if(qr == 1){
                     rs = true;

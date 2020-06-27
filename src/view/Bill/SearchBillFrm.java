@@ -53,7 +53,7 @@ public class SearchBillFrm extends javax.swing.JFrame implements ActionListener{
             pnMain.setLayout(new BoxLayout(pnMain,BoxLayout.Y_AXIS));
             pnMain.add(Box.createRigidArea(new Dimension(0,10)));
 
-            JLabel lblHome = new JLabel("Search a room to edit");
+            JLabel lblHome = new JLabel("Search a bill");
             lblHome.setAlignmentX(Component.CENTER_ALIGNMENT);	
             lblHome.setFont (lblHome.getFont ().deriveFont (20.0f));
             pnMain.add(lblHome);
@@ -62,7 +62,7 @@ public class SearchBillFrm extends javax.swing.JFrame implements ActionListener{
             JPanel pn1 = new JPanel();
             pn1.setLayout(new BoxLayout(pn1,BoxLayout.X_AXIS));
             pn1.setSize(this.getSize().width-5, 20);
-            pn1.add(new JLabel("Room name: "));
+            pn1.add(new JLabel("Bill ID: "));
             txtKey = new JTextField();
             pn1.add(txtKey);
             btnSearch = new JButton("Search");
@@ -109,34 +109,17 @@ public class SearchBillFrm extends javax.swing.JFrame implements ActionListener{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jButton1.setText("jButton1");
-
-        jTextField1.setText("jTextField1");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1)
-                .addGap(51, 51, 51))
+            .addGap(0, 400, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(255, Short.MAX_VALUE))
+            .addGap(0, 300, Short.MAX_VALUE)
         );
 
         pack();
@@ -148,8 +131,6 @@ public class SearchBillFrm extends javax.swing.JFrame implements ActionListener{
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -161,16 +142,17 @@ public class SearchBillFrm extends javax.swing.JFrame implements ActionListener{
                 BillDAO bd = new BillDAO();
                 listBill = bd.searchBill(txtKey.getText().trim());
 
-                String[] columnNames = {"Id", "Month", "Client Name", "Status"};
+                String[] columnNames = {"Id", "Room", "Month", "Client Name", "Status"};
                 String[][] value = new String[listBill.size()][5];
                 for(int i=0; i<listBill.size(); i++){
                         value[i][0] = listBill.get(i).getId() +"";
-                        value[i][1] = listBill.get(i).getMonth() + "";
-                        value[i][2] = listBill.get(i).getContract().getClient().getName();
+                        value[i][1] = listBill.get(i).getRoomId() + "";
+                        value[i][2] = listBill.get(i).getMonth() + "";
+                        value[i][3] = listBill.get(i).getContract().getClient().getName();
                         if(listBill.get(i).isBillStatus()){
-                            value[i][3] = "Đã trả";
+                            value[i][4] = "Đã trả";
                         }else{
-                            value[i][3] = "Chưa trả";
+                            value[i][4] = "Chưa trả";
                         }
                 }
                 DefaultTableModel tableModel = new DefaultTableModel(value, columnNames) {

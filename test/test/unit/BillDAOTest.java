@@ -84,36 +84,73 @@ public class BillDAOTest {
     }
     @Test
     public void testUpdateBill2(){
-            Connection con = DAO.con;
-            float newNumber = 5;
-            String key = "1";
+        Connection con = DAO.con;
+        float newNumber = 5;
+        String key = "1";
 
-            try{
-                    con.setAutoCommit(false);
-                    ArrayList<Bill> lb = bd.searchBill(key);
-                    lb.get(0).getContract().getRooms().get(0).getRrsService().get(0).setNumber(newNumber);
-                    lb.get(0).getContract().getRooms().get(0).getRrsService().get(1).setNumber(newNumber);
-                    
-                    bd.updateInfoBill(lb.get(0));
-                    
-                    //test the new updated row
-                    lb.clear();
-                    lb = bd.searchBill(key);
-                    Assert.assertEquals(lb.get(0).getId(),Integer.parseInt(key));
-                    
-                    Assert.assertEquals(newNumber, lb.get(0).getContract().getRooms().get(0).getRrsService().get(0).getNumber(), 0.000001f);
-                    Assert.assertEquals(newNumber, lb.get(0).getContract().getRooms().get(0).getRrsService().get(1).getNumber(), 0.000001f);
-                    
-            }catch(Exception e){
-                    e.printStackTrace();
-            }finally{
-                    try{
-                            con.rollback();
-                            con.setAutoCommit(true);
-                    }catch(Exception ex){
-                            ex.printStackTrace();
-                    }
-            }
-            return;
+        try{
+                con.setAutoCommit(false);
+                ArrayList<Bill> lb = bd.searchBill(key);
+                lb.get(0).getContract().getRooms().get(0).getRrsService().get(0).setNumber(newNumber);
+                lb.get(0).getContract().getRooms().get(0).getRrsService().get(1).setNumber(newNumber);
+
+                bd.updateInfoBill(lb.get(0));
+
+                //test the new updated row
+                lb.clear();
+                lb = bd.searchBill(key);
+                Assert.assertEquals(lb.get(0).getId(),Integer.parseInt(key));
+
+                Assert.assertEquals(newNumber, lb.get(0).getContract().getRooms().get(0).getRrsService().get(0).getNumber(), 0.000001f);
+                Assert.assertEquals(newNumber, lb.get(0).getContract().getRooms().get(0).getRrsService().get(1).getNumber(), 0.000001f);
+
+        }catch(Exception e){
+                e.printStackTrace();
+        }finally{
+                try{
+                        con.rollback();
+                        con.setAutoCommit(true);
+                }catch(Exception ex){
+                        ex.printStackTrace();
+                }
+        }
+        return;
+    }
+    @Test
+    public void testUpdatePaidBill1(){
+        Connection con = DAO.con;
+        String key = "1";
+
+        try{
+                con.setAutoCommit(false);
+                ArrayList<Bill> lb = bd.searchBill(key);
+
+                float newEN = lb.get(0).getContract().getRooms().get(0).getRrmService().get(0).getNumber() + lb.get(0).getElectricityNumber();
+                float newWN = lb.get(0).getContract().getRooms().get(0).getRrmService().get(1).getNumber() + lb.get(0).getWaterNumber();
+                
+                bd.updatePaidBill(lb.get(0));
+                
+                
+
+                //test the new updated row
+                lb.clear();
+                lb = bd.searchBill(key);
+                Assert.assertEquals(lb.get(0).getId(),Integer.parseInt(key));
+                Assert.assertEquals(lb.get(0).getContract().getRooms().get(0).getRrmService().get(0).getNumber(), newEN, 0.000001f);
+                Assert.assertEquals(lb.get(0).getContract().getRooms().get(0).getRrmService().get(1).getNumber(), newWN, 0.000001f);
+
+
+
+        }catch(Exception e){
+                e.printStackTrace();
+        }finally{
+                try{
+                        con.rollback();
+                        con.setAutoCommit(true);
+                }catch(Exception ex){
+                        ex.printStackTrace();
+                }
+        }
+        return;
     }
 }
