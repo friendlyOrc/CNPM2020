@@ -5,6 +5,7 @@
  */
 package view.Bill;
 
+import dao.BillDAO;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -16,6 +17,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -60,7 +62,7 @@ public class EditBillFrm extends javax.swing.JFrame implements ActionListener{
         lbRoomName = new JLabel(bill.getContract().getRoom().getName() + "");
         lbMonth = new JLabel(bill.getMonth() + "");
         txtRFee = new JTextField(); txtRFee.setText(bill.getRentingFee() + "");
-        txtDebt = new JTextField(); txtDebt.setText(bill.getRentingFee() + "");
+        txtDebt = new JTextField(); txtDebt.setText(bill.getDebt() + "");
         lbClient = new JLabel(bill.getContract().getClient().getName() + "");
         
         tblMService = new JTable();
@@ -96,57 +98,12 @@ public class EditBillFrm extends javax.swing.JFrame implements ActionListener{
         
         float total = bill.getRentingFee() + bill.getDebt();
         
-        String[] columnNames = {"Id", "Tên dịch vụ", "Số tháng trước", "Số tháng này", "Đơn giá"};
-        String[][] value = new String[2][5];
-        for(int i=0; i< 2; i++){
-            RoomMonthlyService sv = bill.getContract().getRoom().getListMS().get(i);
-            value[i][0] = sv.getId() +"";
-            value[i][1] = sv.getMonthlyService().getName();
-            value[i][2] = sv.getNumber() + "";
-            if(i == 0){
-                value[i][3] = sv.getNumber() + bill.getElectricityNumber() + "";
-            }else{
-                value[i][3] = sv.getNumber() + bill.getWaterNumber()+ "";
-            }
-            value[i][4] = sv.getPrice() + "";
-        }
-        tableModel = new DefaultTableModel(value, columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-               //unable to edit cel
-               if(column >= 3) return true;
-               else
-                return false;
-            }
-        };
+        setTbl();
         
-        tblMService.setModel(tableModel);
         content2.add(new JLabel("Dịch vụ hàng tháng"));
         content2.add(scrollPane);
         
         mainContent.add(content2);
-        
-        String[] columnNames2 = {"Id", "Tên dịch vụ", "Số lượng", "Đơn giá"};
-        ArrayList<RoomStaticService> rrss = bill.getContract().getRoom().getListSS();
-        String[][] value2 = new String[rrss.size()][6];
-        for(int i= 0; i< rrss.size(); i++){
-            RoomStaticService sv = rrss.get(i);
-            value2[i][0] = sv.getId() +"";
-            value2[i][1] = sv.getStaticService().getName();
-            value2[i][2] = sv.getNumber() + "";
-            value2[i][3] = sv.getPrice() + "";
-        }
-        tableModel2 = new DefaultTableModel(value2, columnNames2) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-               //unable to edit cells
-               if(column >= 2) return true;
-               else
-                return false;
-            }
-        };
-        
-        tblSService.setModel(tableModel2);
         
         JPanel content3 = new JPanel();
         content3.setLayout(new GridLayout(2, 1));
@@ -172,84 +129,100 @@ public class EditBillFrm extends javax.swing.JFrame implements ActionListener{
         this.setSize(500,600);				
         this.setLocation(200,10);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
     }
+    private void setTbl(){
+        String[] columnNames = {"Id", "Tên dịch vụ", "Số tháng trước", "Số tháng này", "Đơn giá"};
+        String[][] value = new String[2][5];
+        for(int i=0; i< 2; i++){
+            RoomMonthlyService sv = bill.getContract().getRoom().getListMS().get(i);
+            value[i][0] = sv.getId() +"";
+            value[i][1] = sv.getMonthlyService().getName();
+            value[i][2] = sv.getNumber() + "";
+            if(i == 0){
+                value[i][3] = sv.getNumber() + bill.getElectricityNumber() + "";
+            }else{
+                value[i][3] = sv.getNumber() + bill.getWaterNumber()+ "";
+            }
+            value[i][4] = sv.getPrice() + "";
+        }
+        tableModel = new DefaultTableModel(value, columnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+               //unable to edit cel
+               if(column >= 3) return true;
+               else
+                return false;
+            }
+        };
 
+        tblMService.setModel(tableModel);
+
+        String[] columnNames2 = {"Id", "Tên dịch vụ", "Số lượng", "Đơn giá"};
+        ArrayList<RoomStaticService> rrss = bill.getContract().getRoom().getListSS();
+        String[][] value2 = new String[rrss.size()][6];
+        for(int i= 0; i< rrss.size(); i++){
+            RoomStaticService sv = rrss.get(i);
+            value2[i][0] = sv.getId() +"";
+            value2[i][1] = sv.getStaticService().getName();
+            value2[i][2] = sv.getNumber() + "";
+            value2[i][3] = sv.getPrice() + "";
+        }
+        tableModel2 = new DefaultTableModel(value2, columnNames2) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+               //unable to edit cells
+               if(column >= 2) return true;
+               else
+                return false;
+            }
+        };
+
+        tblSService.setModel(tableModel2);
+    }
     private void initForm(){
         if(bill != null){
             txtRFee.setText(bill.getRentingFee() + "");
-            txtDebt.setText(bill.getRentingFee() + "");
+            txtDebt.setText(bill.getDebt() + "");
             
-            String[] columnNames = {"Id", "Tên dịch vụ", "Số tháng trước", "Số tháng này", "Đơn giá"};
-            String[][] value = new String[2][5];
-            for(int i=0; i< 2; i++){
-                RoomMonthlyService sv = bill.getContract().getRoom().getListMS().get(i);
-                value[i][0] = sv.getId() +"";
-                value[i][1] = sv.getMonthlyService().getName();
-                value[i][2] = sv.getNumber() + "";
-                if(i == 0){
-                    value[i][3] = sv.getNumber() + bill.getElectricityNumber() + "";
-                }else{
-                    value[i][3] = sv.getNumber() + bill.getWaterNumber()+ "";
-                }
-                value[i][4] = sv.getPrice() + "";
-            }
-            tableModel = new DefaultTableModel(value, columnNames) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                   //unable to edit cel
-                   if(column >= 3) return true;
-                   else
-                    return false;
-                }
-            };
-
-            tblMService.setModel(tableModel);
-
-            String[] columnNames2 = {"Id", "Tên dịch vụ", "Số lượng", "Đơn giá"};
-            ArrayList<RoomStaticService> rrss = bill.getContract().getRoom().getListSS();
-            String[][] value2 = new String[rrss.size()][6];
-            for(int i= 0; i< rrss.size(); i++){
-                RoomStaticService sv = rrss.get(i);
-                value2[i][0] = sv.getId() +"";
-                value2[i][1] = sv.getStaticService().getName();
-                value2[i][2] = sv.getNumber() + "";
-                value2[i][3] = sv.getPrice() + "";
-            }
-            tableModel2 = new DefaultTableModel(value2, columnNames2) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                   //unable to edit cells
-                   if(column >= 2) return true;
-                   else
-                    return false;
-                }
-            };
-            tblMService.setModel(tableModel);
-            tblSService.setModel(tableModel2);
+            setTbl();
         }
     }
+    
 
     @Override
     public void actionPerformed(ActionEvent e) {
-            // TODO Auto-generated method stub
-            JButton btnClicked = (JButton)e.getSource();
-            if(btnClicked.equals(btnReset)){
-                    initForm();
-                    return;
+        // TODO Auto-generated method stub
+        JButton btnClicked = (JButton)e.getSource();
+        if(btnClicked.equals(btnReset)){
+                initForm();
+                return;
+        }
+        if(btnClicked.equals(btnConfirm)){
+            bill.setRentingFee(Float.parseFloat(txtRFee.getText()));
+            bill.setDebt(Float.parseFloat(txtDebt.getText()));
+            float OEN = bill.getContract().getRoom().getListMS().get(0).getNumber();
+            float OWN = bill.getContract().getRoom().getListMS().get(1).getNumber();
+            bill.setElectricityNumber(Float.parseFloat(tblMService.getValueAt(0, 3).toString()) - OEN);
+            bill.setWaterNumber(Float.parseFloat(tblMService.getValueAt(1, 3).toString()) - OWN);
+            
+            bill.getContract().getRoom().getListMS().get(0).setPrice(Float.parseFloat(tblMService.getValueAt(0, 4).toString()));
+            
+            bill.getContract().getRoom().getListMS().get(1).setPrice(Float.parseFloat(tblMService.getValueAt(1, 4).toString()));
+
+            int sNum = bill.getContract().getRoom().getListSS().size();
+            for(int i = 0; i < sNum; i++){
+                bill.getContract().getRoom().getListSS().get(i).setNumber(Float.parseFloat(tblSService.getValueAt(i, 2).toString()));
+                bill.getContract().getRoom().getListSS().get(i).setPrice(Float.parseFloat(tblSService.getValueAt(i, 3).toString()));
             }
-            if(btnClicked.equals(btnConfirm)){
-//                    room.setName(txtName.getText());
-//                    room.setType(txtType.getText());
-//                    room.setPrice(Float.parseFloat(txtPrice.getText()));
-//                    room.setDes(txtDes.getText());
-//
-//                    RoomDAO rd = new RoomDAO();
-//                    if(rd.updateRoom(room)) {
-//                            JOptionPane.showMessageDialog(this, "The room is succeffully updated!");
-//                            (new ManagerHomeFrm(user)).setVisible(true);
-//                            this.dispose();
-//                    }	
-            }
+            BillDAO bd = new BillDAO();
+            bd.updateInfoBill(bill);
+
+            JOptionPane.showMessageDialog(this, "Sửa Bill thành công!");
+
+            (new BillInfoFrm(user, bill)).setVisible(true);
+            this.dispose();
+        }
     }
 
 }

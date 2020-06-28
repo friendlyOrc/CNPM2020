@@ -69,6 +69,7 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         lbRFee = new JLabel(bill.getRentingFee() + "");
         lbDebt = new JLabel(bill.getDebt()+ "");
         lbClient = new JLabel(bill.getContract().getClient().getName() + "");
+        txtPaid = new JTextField(); txtPaid.setText("");
         
         tblMService = new JTable();
         JScrollPane scrollPane= new  JScrollPane(tblMService);
@@ -191,7 +192,7 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
             JButton btnClicked = (JButton)e.getSource();
             if(btnClicked.equals(btnConfirm)){
                 BillDAO bd = new BillDAO();
-                if(Float.parseFloat(txtPaid.getText()) == 0){
+                if(txtPaid.getText().isEmpty()){
                     JOptionPane.showMessageDialog(this, "Vui lòng điền số tiền thanh toán");
                 }else if(bd.updatePaidBill(bill, Float.parseFloat(txtPaid.getText()))) {
                     JOptionPane.showMessageDialog(this, "Xác nhận thanh toán thành công");

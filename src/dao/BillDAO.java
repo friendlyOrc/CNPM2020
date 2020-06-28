@@ -46,6 +46,7 @@ public class BillDAO extends DAO{
                 temp.setServiceFee(rs.getFloat("serviceFee"));
                 temp.setWaterNumber(rs.getFloat("waternumber"));
                 temp.setElectricityNumber(rs.getFloat("electricitynumber"));
+                temp.setDebt(rs.getFloat("debt"));
                 
 
                 if(rs.getInt("billstatus") == 1){
