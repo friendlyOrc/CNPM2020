@@ -18,6 +18,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -80,14 +81,19 @@ public class SearchBillFrm extends javax.swing.JFrame implements ActionListener{
 
             tblResult.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent e) {
-                            int column = tblResult.getColumnModel().getColumnIndexAtX(e.getX()); // get the coloum of the button
-                            int row = e.getY() / tblResult.getRowHeight(); // get the row of the button
+                        int column = tblResult.getColumnModel().getColumnIndexAtX(e.getX()); // get the coloum of the button
+                        int row = e.getY() / tblResult.getRowHeight(); // get the row of the button
 
-                            // *Checking the row or column is valid or not
-                            if (row < tblResult.getRowCount() && row >= 0 && column < tblResult.getColumnCount() && column >= 0) {
-                                    (new BillInfoFrm(user, listBill.get(row))).setVisible(true);
-                                    mainFrm.dispose();
+                        // *Checking the row or column is valid or not
+                        if (row < tblResult.getRowCount() && row >= 0 && column < tblResult.getColumnCount() && column >= 0) {
+                            Bill b = listBill.get(row);
+                            if(b.isBillStatus()){
+                                JOptionPane.showMessageDialog(mainFrm, "Hóa đơn đã thanh toán");
+                            }else{
+                                (new BillInfoFrm(user, listBill.get(row))).setVisible(true);
+                                mainFrm.dispose();
                             }
+                        }
                     }
             });
 
@@ -137,32 +143,36 @@ public class SearchBillFrm extends javax.swing.JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         JButton btnClicked = (JButton)e.getSource();
         if(btnClicked.equals(btnSearch)){
-                if((txtKey.getText() == null)||(txtKey.getText().length() == 0))
-                        return;
-                BillDAO bd = new BillDAO();
-                listBill = bd.searchBill(txtKey.getText().trim());
-
-                String[] columnNames = {"Id", "Room", "Month", "Client Name", "Status"};
-                String[][] value = new String[listBill.size()][5];
-                for(int i=0; i<listBill.size(); i++){
-                        value[i][0] = listBill.get(i).getId() +"";
-                        value[i][1] = listBill.get(i).getRoomId() + "";
-                        value[i][2] = listBill.get(i).getMonth() + "";
-                        value[i][3] = listBill.get(i).getContract().getClient().getName();
-                        if(listBill.get(i).isBillStatus()){
-                            value[i][4] = "Đã trả";
-                        }else{
-                            value[i][4] = "Chưa trả";
-                        }
-                }
-                DefaultTableModel tableModel = new DefaultTableModel(value, columnNames) {
-                    @Override
-                    public boolean isCellEditable(int row, int column) {
-                       //unable to edit cells
-                       return false;
+            if((txtKey.getText() == null)||(txtKey.getText().length() == 0))
+                    return;
+            BillDAO bd = new BillDAO();
+            listBill = bd.searchBill(txtKey.getText().trim());
+            if(listBill.size() == 0){
+                JOptionPane.showMessageDialog(mainFrm, "Không tồn tại hóa đơn");
+            }
+            String[] columnNames = {"Id", "Room", "Month", "Client Name", "Status"};
+            String[][] value = new String[listBill.size()][5];
+            for(int i=0; i<listBill.size(); i++){
+                    value[i][0] = listBill.get(i).getId() +"";
+                    value[i][1] = listBill.get(i).getContract().getRoom().getName() + "";
+                    value[i][2] = listBill.get(i).getMonth() + "";
+                    value[i][3] = listBill.get(i).getContract().getClient().getName();
+                    if(listBill.get(i).isBillStatus()){
+                        value[i][4] = "Đã trả";
+                    }else{
+                        value[i][4] = "Chưa trả";
                     }
-                };
-                tblResult.setModel(tableModel);
+            }
+            DefaultTableModel tableModel = new DefaultTableModel(value, columnNames) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                   //unable to edit cells
+                   return false;
+                }
+            };
+            tblResult.setModel(tableModel);
+            
+            
         }
     }
 }

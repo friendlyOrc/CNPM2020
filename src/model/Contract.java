@@ -17,20 +17,24 @@ public class Contract implements Serializable{
     private int id;
     private Date checkin;
     private int contractDuration;
+    private float rentingPrice;
+    private float deposit;
     private User user;
     private Client client;
-    private ArrayList<RentedRoom> rooms;
+    private Room room;
 
     public Contract() {
     }
 
-    public Contract(int id, Date checkin, int contractDuration, User user, Client client, ArrayList<RentedRoom> rooms) {
+    public Contract(int id, Date checkin, int contractDuration, float rentingPrice, float deposit, User user, Client client, Room room) {
         this.id = id;
         this.checkin = checkin;
         this.contractDuration = contractDuration;
+        this.rentingPrice = rentingPrice;
+        this.deposit = deposit;
         this.user = user;
         this.client = client;
-        this.rooms = rooms;
+        this.room = room;
     }
 
     public int getId() {
@@ -57,6 +61,22 @@ public class Contract implements Serializable{
         this.contractDuration = contractDuration;
     }
 
+    public float getRentingPrice() {
+        return rentingPrice;
+    }
+
+    public void setRentingPrice(float rentingPrice) {
+        this.rentingPrice = rentingPrice;
+    }
+
+    public float getDeposit() {
+        return deposit;
+    }
+
+    public void setDeposit(float deposit) {
+        this.deposit = deposit;
+    }
+
     public User getUser() {
         return user;
     }
@@ -73,12 +93,12 @@ public class Contract implements Serializable{
         this.client = client;
     }
 
-    public ArrayList<RentedRoom> getRooms() {
-        return rooms;
+    public Room getRoom() {
+        return room;
     }
 
-    public void setRooms(ArrayList<RentedRoom> rooms) {
-        this.rooms = rooms;
+    public void setRoom(Room room) {
+        this.room = room;
     }
 
     

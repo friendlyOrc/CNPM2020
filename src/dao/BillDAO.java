@@ -14,9 +14,8 @@ import model.Bill;
 import model.Client;
 import model.Contract;
 import model.MonthlyService;
-import model.RentedRoom;
-import model.RentedRoomMonthlyService;
-import model.RentedRoomStaticService;
+import model.RoomMonthlyService;
+import model.RoomStaticService;
 import model.Room;
 import model.StaticService;
 import model.User;
@@ -42,7 +41,6 @@ public class BillDAO extends DAO{
             while(rs.next()) {
                 Bill temp = new Bill();
                 temp.setId(rs.getInt("id"));
-                temp.setRoomId(rs.getInt("roomid"));
                 temp.setMonth(rs.getInt("month"));
                 temp.setRentingFee(rs.getFloat("rentingfee"));
                 temp.setServiceFee(rs.getFloat("serviceFee"));
@@ -67,9 +65,8 @@ public class BillDAO extends DAO{
                     if(rs2.next()){
                         Contract ct = new Contract();
                         ct.setId(rs2.getInt("id"));
-                        ct.setCheckin(new SimpleDateFormat("yyyy-MM-dd").parse(rs2.getString("checkin")));
-                        ct.setContractDuration(rs2.getInt("contractduration"));
                         ct.setUser(new User());
+                        
                         int clientID = rs2.getInt("clientid");
 
 //                            Tìm Client
@@ -81,7 +78,7 @@ public class BillDAO extends DAO{
                             if(rsC.next()){
                                 Client c = new Client();
                                 c.setName(rsC.getString("name"));
-
+                                
                                 ct.setClient(c);
                             }
                         }catch(Exception e) {
@@ -89,44 +86,26 @@ public class BillDAO extends DAO{
                         }
 
 //                            Tìm phòng đã thuê trong Contract
-                        String sql3 = "SELECT id, roomid FROM tblRentedRoom WHERE contractid = ? and roomid = ?";
+                        String sql3 = "SELECT id, name FROM tblRoom WHERE id = ?";
                         try{
                             ps = con.prepareStatement(sql3);
-                            ps.setInt(1, ct.getId());
-                            ps.setInt(2, temp.getRoomId());
+                            ps.setInt(1, rs2.getInt("roomid"));
                             ResultSet rs3 = ps.executeQuery();
-                            ArrayList<RentedRoom> rra = new ArrayList();
+                            Room r = new Room();
                             if(rs3.next()){
-                                RentedRoom rr = new RentedRoom();
-                                rr.setId(rs3.getInt("id"));
+                                r.setId(rs3.getInt("id"));
+                                r.setName(rs3.getString("name"));
 
 //                                    Tìm phòng ứng với phòng đã thuê
-                                int roomID = rs3.getInt("roomid");
-                                String sql4 = "SELECT name FROM tblRoom WHERE id = ?";
-                                try{
-                                    ps = con.prepareStatement(sql4);
-                                    ps.setInt(1, roomID);
-                                    ResultSet rs4 = ps.executeQuery();
-                                    if(rs4.next()){
-                                        Room r = new Room();
-                                        r.setId(roomID);
-                                        r.setName(rs4.getString("name"));
-
-                                        rr.setRoom(r);
-                                    }
-                                }catch(Exception e) {
-                                    e.printStackTrace();
-                                }
-
 //                                    Tìm Dịch vụ hàng tháng của phòng đã thuê
-                                String sql5 = "SELECT * FROM tblRentedRoomMonthlyService WHERE rentedroomid = ?";
+                                String sql5 = "SELECT * FROM tblRoomMonthlyService WHERE roomid = ?";
                                 try{
                                     ps = con.prepareStatement(sql5);
-                                    ps.setInt(1, rr.getId());
+                                    ps.setInt(1, r.getId());
                                     ResultSet rs5 = ps.executeQuery();
-                                    ArrayList<RentedRoomMonthlyService> rrms = new ArrayList();
+                                    ArrayList<RoomMonthlyService> rrms = new ArrayList();
                                     while(rs5.next()){
-                                        RentedRoomMonthlyService ms = new RentedRoomMonthlyService();
+                                        RoomMonthlyService ms = new RoomMonthlyService();
                                         ms.setId(rs5.getInt("id"));
                                         ms.setPrice(rs5.getFloat("price"));
                                         ms.setNumber(rs5.getInt("number"));
@@ -143,24 +122,24 @@ public class BillDAO extends DAO{
                                                 ms.setMonthlyService(s);
                                             }
                                         }catch(Exception e) {
-                                            e.printStackTrace();
+                                            e.printStackTrace();        
                                         }
                                         rrms.add(ms);
                                     }
-                                    rr.setRrmService(rrms);
+                                    r.setListMS(rrms);
 
                                 }catch(Exception e) {
                                     e.printStackTrace();
                                 }
 //                                    Tìm dịch vụ cố định cho phòng đã thuê
-                                sql5 = "SELECT * FROM tblRentedRoomStaticService WHERE rentedroomid = ?";
+                                sql5 = "SELECT * FROM tblRoomStaticService WHERE roomid = ?";
                                 try{
                                     ps = con.prepareStatement(sql5);
-                                    ps.setInt(1, rr.getId());
+                                    ps.setInt(1, r.getId());
                                     ResultSet rs5 = ps.executeQuery();
-                                    ArrayList<RentedRoomStaticService> rrss = new ArrayList();
+                                    ArrayList<RoomStaticService> rrss = new ArrayList();
                                     while(rs5.next()){
-                                        RentedRoomStaticService ss = new RentedRoomStaticService();
+                                        RoomStaticService ss = new RoomStaticService();
                                         ss.setId(rs5.getInt("id"));
                                         ss.setPrice(rs5.getFloat("price"));
                                         ss.setNumber(rs5.getInt("number"));
@@ -181,13 +160,12 @@ public class BillDAO extends DAO{
                                         }
                                         rrss.add(ss);
                                     }
-                                    rr.setRrsService(rrss);
+                                    r.setListSS(rrss);
                                 }catch(Exception e) {
                                     e.printStackTrace();
                                 }
-                                rra.add(rr);
                             }
-                            ct.setRooms(rra);
+                            ct.setRoom(r);
                         }catch(Exception e) {
                             e.printStackTrace();
                         }
@@ -196,7 +174,11 @@ public class BillDAO extends DAO{
                 }catch(Exception e) {
                     e.printStackTrace();
                 }
-            rsBill.add(temp);
+                temp.setTotal(temp.getRentingFee()
+                            + temp.getElectricityNumber()*temp.getContract().getRoom().getListMS().get(0).getPrice() 
+                            + temp.getWaterNumber()*temp.getContract().getRoom().getListMS().get(1).getPrice() 
+                            + temp.getServiceFee() + temp.getDebt());
+                rsBill.add(temp);
             }
         }catch(Exception e) {
             e.printStackTrace();
@@ -204,44 +186,44 @@ public class BillDAO extends DAO{
         return rsBill;
     }
     
-    public boolean updatePaidBill(Bill b){
+    public boolean updatePaidBill(Bill b, float paid){
         boolean rs = false;
-        String sql = "UPDATE tblBill SET billstatus = 1 WHERE id = ?";
-        String sqlMService = "UPDATE tblRentedRoomMonthlyService SET number = ? WHERE id = ?";
+        float debt = b.getTotal() - paid;
+        String sql = "UPDATE tblBill SET billstatus = 1, debt = ? WHERE id = ?";
+        String sqlMService = "UPDATE tblRoomMonthlyService SET number = ? WHERE id = ?";
         try{
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, b.getId());
+            ps.setFloat(1, debt);
+            ps.setInt(2, b.getId());
             int qr = ps.executeUpdate();
             if(qr == 1){
                 rs = true;
             }else return rs;
-            int roomNum = b.getContract().getRooms().size();
             
             ps = con.prepareStatement(sqlMService);
-            for(int i = 0; i < roomNum; i++){
-                RentedRoom rr = b.getContract().getRooms().get(i);
-                
-                ps.setFloat(1, rr.getRrmService().get(0).getNumber() + b.getElectricityNumber());
-                ps.setInt(2, rr.getRrmService().get(0).getId());
-                qr = ps.executeUpdate();
-                if(qr == 1){
-                    rs = true;
-                }else{
-                    rs = false;
-                    return rs;
-                }
-                
-                ps.setFloat(1, rr.getRrmService().get(1).getNumber() + b.getWaterNumber());
-                ps.setInt(2, rr.getRrmService().get(1).getId());
-                qr = ps.executeUpdate();
-                if(qr == 1){
-                    rs = true;
-                }else{
-                    rs = false;
-                    return rs;
-                }
-                
+            
+            Room r = b.getContract().getRoom();
+
+            ps.setFloat(1, r.getListMS().get(0).getNumber() + b.getElectricityNumber());
+            ps.setInt(2, r.getListMS().get(0).getId());
+            qr = ps.executeUpdate();
+            if(qr == 1){
+                rs = true;
+            }else{
+                rs = false;
+                return rs;
             }
+
+            ps.setFloat(1, r.getListMS().get(1).getNumber() + b.getWaterNumber());
+            ps.setInt(2, r.getListMS().get(1).getId());
+            qr = ps.executeUpdate();
+            if(qr == 1){
+                rs = true;
+            }else{
+                rs = false;
+                return rs;
+            }
+                
         }catch(Exception e) {
             e.printStackTrace();
         }
@@ -251,7 +233,7 @@ public class BillDAO extends DAO{
     public boolean updateInfoBill(Bill b){
         boolean rs = false;
         String sqlBill = "UPDATE tblBill SET rentingFee = ?, electricityNumber = ?, waterNumber = ?, serviceFee = ? WHERE id = ?";
-        String sqlSService = "UPDATE tblRentedRoomStaticService SET `number` = ? WHERE id = ?";
+        String sqlSService = "UPDATE tblRoomStaticService SET `number` = ? WHERE id = ?";
         try{
             PreparedStatement ps = con.prepareStatement(sqlBill);
             ps.setFloat(1, b.getRentingFee());
@@ -265,24 +247,22 @@ public class BillDAO extends DAO{
             }else{
                 return rs;
             }
-            int roomNum = b.getContract().getRooms().size();
             PreparedStatement ps2 = con.prepareStatement(sqlSService);
-            for(int i = 0; i < roomNum; i++){
-                RentedRoom rr = b.getContract().getRooms().get(i);
-                
-                int sSNum = rr.getRrsService().size();
-                for(int j = 0; j < sSNum; j++){
-                    ps2.setFloat(1, rr.getRrsService().get(j).getNumber());
-                    ps2.setInt(2, rr.getRrsService().get(j).getId());
-                    qr = ps2.executeUpdate();
-                    if(qr == 1){
-                        rs = true;
-                    }else{
-                        rs = false;
-                        return rs;
-                    }
+            Room r = b.getContract().getRoom();
+
+            int sSNum = r.getListSS().size();
+            for(int j = 0; j < sSNum; j++){
+                ps2.setFloat(1, r.getListSS().get(j).getNumber());
+                ps2.setInt(2, r.getListSS().get(j).getId());
+                qr = ps2.executeUpdate();
+                if(qr == 1){
+                    rs = true;
+                }else{
+                    rs = false;
+                    return rs;
                 }
             }
+            
         }catch(Exception e) {
             e.printStackTrace();
         }

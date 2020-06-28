@@ -5,23 +5,17 @@
  */
 package view.Bill;
 
-import javax.swing.JButton;
-import javax.swing.JTextField;
-import dao.BillDAO;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -31,24 +25,23 @@ import model.Bill;
 import model.RoomMonthlyService;
 import model.RoomStaticService;
 import model.User;
-import view.user.ManagerHomeFrm;
 
 /**
  *
- * @author HP075
+ * @author DELL
  */
-public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
-
+public class EditBillFrm extends javax.swing.JFrame implements ActionListener{
     private Bill bill;
-    private JLabel lbId, lbRoomName, lbClient, lbMonth, lbRFee, lbSSFee, lbTotal, lbDebt;
-    private JTextField txtPaid;
+    private JLabel lbId, lbRoomName, lbClient, lbMonth;
+    private JTextField txtPaid, txtRFee, txtDebt;
     private JTable tblMService, tblSService;
-    private JButton btnConfirm, btnEdit;
+    private JButton btnConfirm, btnReset;
     private User user;
-
-
-    public BillInfoFrm(User user, Bill bill){
-        super("Bill info");
+    DefaultTableModel tableModel, tableModel2;
+	
+	
+    public EditBillFrm(User user, Bill bill){
+        super("Edit a Bill");
         this.user = user;
         this.bill = bill;
 
@@ -66,8 +59,8 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         lbId = new JLabel(bill.getId() + "");
         lbRoomName = new JLabel(bill.getContract().getRoom().getName() + "");
         lbMonth = new JLabel(bill.getMonth() + "");
-        lbRFee = new JLabel(bill.getRentingFee() + "");
-        lbDebt = new JLabel(bill.getDebt()+ "");
+        txtRFee = new JTextField(); txtRFee.setText(bill.getRentingFee() + "");
+        txtDebt = new JTextField(); txtDebt.setText(bill.getRentingFee() + "");
         lbClient = new JLabel(bill.getContract().getClient().getName() + "");
         
         tblMService = new JTable();
@@ -80,8 +73,8 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
 //        tblSService.setFillsViewportHeight(false); 
 //        scrollPane2.setPreferredSize(new Dimension(scrollPane2.getPreferredSize().width, 300));
         
-        btnConfirm = new JButton("Xác nhận");
-        btnEdit = new JButton("Sửa");
+        btnConfirm = new JButton("Sửa");
+        btnReset = new JButton("Làm mới");
 
         JPanel mainContent = new JPanel();
         mainContent.setLayout(new GridLayout(4,1));
@@ -93,8 +86,8 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         content1.add(new JLabel("Room name:")); 	content1.add(lbRoomName);
         content1.add(new JLabel("Client: "));           content1.add(lbClient);
         content1.add(new JLabel("Month:"));             content1.add(lbMonth);
-        content1.add(new JLabel("Price:"));             content1.add(lbRFee);
-        content1.add(new JLabel("Debt:"));              content1.add(lbDebt);
+        content1.add(new JLabel("Price:"));             content1.add(txtRFee);
+        content1.add(new JLabel("Debt:"));              content1.add(txtDebt);
         
         mainContent.add(content1);
         
@@ -103,8 +96,8 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         
         float total = bill.getRentingFee() + bill.getDebt();
         
-        String[] columnNames = {"Id", "Tên dịch vụ", "Số tháng trước", "Số tháng này", "Đơn giá", "Thành tiền"};
-        String[][] value = new String[2][6];
+        String[] columnNames = {"Id", "Tên dịch vụ", "Số tháng trước", "Số tháng này", "Đơn giá"};
+        String[][] value = new String[2][5];
         for(int i=0; i< 2; i++){
             RoomMonthlyService sv = bill.getContract().getRoom().getListMS().get(i);
             value[i][0] = sv.getId() +"";
@@ -112,19 +105,18 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
             value[i][2] = sv.getNumber() + "";
             if(i == 0){
                 value[i][3] = sv.getNumber() + bill.getElectricityNumber() + "";
-                value[i][5] = sv.getPrice()*bill.getElectricityNumber() + "";
             }else{
                 value[i][3] = sv.getNumber() + bill.getWaterNumber()+ "";
-                value[i][5] = sv.getPrice()*bill.getWaterNumber() + "";
             }
             value[i][4] = sv.getPrice() + "";
-            total += Float.parseFloat(value[i][5]);
         }
-        DefaultTableModel tableModel = new DefaultTableModel(value, columnNames) {
+        tableModel = new DefaultTableModel(value, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
-               //unable to edit cells
-               return false;
+               //unable to edit cel
+               if(column >= 3) return true;
+               else
+                return false;
             }
         };
         
@@ -134,7 +126,7 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         
         mainContent.add(content2);
         
-        String[] columnNames2 = {"Id", "Tên dịch vụ", "Số lượng", "Đơn giá", "Thành tiền"};
+        String[] columnNames2 = {"Id", "Tên dịch vụ", "Số lượng", "Đơn giá"};
         ArrayList<RoomStaticService> rrss = bill.getContract().getRoom().getListSS();
         String[][] value2 = new String[rrss.size()][6];
         for(int i= 0; i< rrss.size(); i++){
@@ -143,14 +135,14 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
             value2[i][1] = sv.getStaticService().getName();
             value2[i][2] = sv.getNumber() + "";
             value2[i][3] = sv.getPrice() + "";
-            value2[i][4] = sv.getNumber()*sv.getPrice() + "";
-            total += Float.parseFloat(value[i][4]);
         }
-        DefaultTableModel tableModel2 = new DefaultTableModel(value2, columnNames2) {
+        tableModel2 = new DefaultTableModel(value2, columnNames2) {
             @Override
             public boolean isCellEditable(int row, int column) {
                //unable to edit cells
-               return false;
+               if(column >= 2) return true;
+               else
+                return false;
             }
         };
         
@@ -168,15 +160,13 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         
         txtPaid = new JTextField(15);
         
-        content4.add(new JLabel("Total:"));             content4.add(new JLabel(total + ""));
-        content4.add(new JLabel("Paid: "));             content4.add(txtPaid);
-        content4.add(btnConfirm);                       content4.add(btnEdit);
+        content4.add(btnConfirm);                       content4.add(btnReset);
         
         mainContent.add(content4);
         
         pnMain.add(mainContent);		  
         btnConfirm.addActionListener(this);
-        btnEdit.addActionListener(this);
+        btnReset.addActionListener(this);
 		
         this.setContentPane(pnMain);
         this.setSize(500,600);				
@@ -184,53 +174,82 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
+    private void initForm(){
+        if(bill != null){
+            txtRFee.setText(bill.getRentingFee() + "");
+            txtDebt.setText(bill.getRentingFee() + "");
+            
+            String[] columnNames = {"Id", "Tên dịch vụ", "Số tháng trước", "Số tháng này", "Đơn giá"};
+            String[][] value = new String[2][5];
+            for(int i=0; i< 2; i++){
+                RoomMonthlyService sv = bill.getContract().getRoom().getListMS().get(i);
+                value[i][0] = sv.getId() +"";
+                value[i][1] = sv.getMonthlyService().getName();
+                value[i][2] = sv.getNumber() + "";
+                if(i == 0){
+                    value[i][3] = sv.getNumber() + bill.getElectricityNumber() + "";
+                }else{
+                    value[i][3] = sv.getNumber() + bill.getWaterNumber()+ "";
+                }
+                value[i][4] = sv.getPrice() + "";
+            }
+            tableModel = new DefaultTableModel(value, columnNames) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                   //unable to edit cel
+                   if(column >= 3) return true;
+                   else
+                    return false;
+                }
+            };
+
+            tblMService.setModel(tableModel);
+
+            String[] columnNames2 = {"Id", "Tên dịch vụ", "Số lượng", "Đơn giá"};
+            ArrayList<RoomStaticService> rrss = bill.getContract().getRoom().getListSS();
+            String[][] value2 = new String[rrss.size()][6];
+            for(int i= 0; i< rrss.size(); i++){
+                RoomStaticService sv = rrss.get(i);
+                value2[i][0] = sv.getId() +"";
+                value2[i][1] = sv.getStaticService().getName();
+                value2[i][2] = sv.getNumber() + "";
+                value2[i][3] = sv.getPrice() + "";
+            }
+            tableModel2 = new DefaultTableModel(value2, columnNames2) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                   //unable to edit cells
+                   if(column >= 2) return true;
+                   else
+                    return false;
+                }
+            };
+            tblMService.setModel(tableModel);
+            tblSService.setModel(tableModel2);
+        }
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
             // TODO Auto-generated method stub
             JButton btnClicked = (JButton)e.getSource();
-            if(btnClicked.equals(btnConfirm)){
-                BillDAO bd = new BillDAO();
-                if(Float.parseFloat(txtPaid.getText()) == 0){
-                    JOptionPane.showMessageDialog(this, "Vui lòng điền số tiền thanh toán");
-                }else if(bd.updatePaidBill(bill, Float.parseFloat(txtPaid.getText()))) {
-                    JOptionPane.showMessageDialog(this, "Xác nhận thanh toán thành công");
-                    (new ManagerHomeFrm(user)).setVisible(true);
-                    this.dispose();
-                }else{
-                    JOptionPane.showMessageDialog(this, "Lỗi");
-                    (new ManagerHomeFrm(user)).setVisible(true);
-                    this.dispose();
-                }
+            if(btnClicked.equals(btnReset)){
+                    initForm();
+                    return;
             }
-            if(btnClicked.equals(btnEdit)){
-                (new EditBillFrm(user, bill)).setVisible(true);
-                this.dispose();
+            if(btnClicked.equals(btnConfirm)){
+//                    room.setName(txtName.getText());
+//                    room.setType(txtType.getText());
+//                    room.setPrice(Float.parseFloat(txtPrice.getText()));
+//                    room.setDes(txtDes.getText());
+//
+//                    RoomDAO rd = new RoomDAO();
+//                    if(rd.updateRoom(room)) {
+//                            JOptionPane.showMessageDialog(this, "The room is succeffully updated!");
+//                            (new ManagerHomeFrm(user)).setVisible(true);
+//                            this.dispose();
+//                    }	
             }
     }
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    
-    
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
 }

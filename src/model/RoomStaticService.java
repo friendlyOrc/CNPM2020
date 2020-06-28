@@ -11,16 +11,16 @@ import java.io.Serializable;
  *
  * @author DELL
  */
-public class RentedRoomStaticService implements Serializable{
+public class RoomStaticService implements Serializable{
     private int id;
     private float price;
     private StaticService staticService;
     private float number;
 
-    public RentedRoomStaticService() {
+    public RoomStaticService() {
     }
 
-    public RentedRoomStaticService(int id, float price, StaticService staticService, float number) {
+    public RoomStaticService(int id, float price, StaticService staticService, float number) {
         this.id = id;
         this.price = price;
         this.staticService = staticService;

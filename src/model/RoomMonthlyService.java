@@ -11,16 +11,16 @@ import java.io.Serializable;
  *
  * @author DELL
  */
-public class RentedRoomMonthlyService implements Serializable{
+public class RoomMonthlyService implements Serializable{
     private int id;
     private float price;
     private MonthlyService monthlyService;
     private float number;
 
-    public RentedRoomMonthlyService() {
+    public RoomMonthlyService() {
     }
 
-    public RentedRoomMonthlyService(int id, float price, MonthlyService monthlyService, float number) {
+    public RoomMonthlyService(int id, float price, MonthlyService monthlyService, float number) {
         this.id = id;
         this.price = price;
         this.monthlyService = monthlyService;
