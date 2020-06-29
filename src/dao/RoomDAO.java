@@ -27,8 +27,9 @@ public class RoomDAO extends DAO{
                             "WHERE (NOT EXISTS(SELECT id FROM tblContract WHERE roomid = tblRoom.id ) AND tblRoom.price <= ?)\n" +
                             "	OR EXISTS(SELECT * FROM tblContract \n" +
                             "    WHERE tblContract.roomid = tblRoom.id \n" +
-                            "	AND tblRoom.price <= ? \n" +
-                            "    AND (DATEDIFF(?, date_add(tblContract.checkin, INTERVAL tblContract.contractDuration MONTH))) >= 0);";
+                            "	AND (tblRoom.price <= ?) \n" +
+                            "    AND (DATEDIFF(?, date_add(tblContract.checkin, INTERVAL tblContract.contractDuration MONTH))) >= 0\n" +
+                            "    AND (DATEDIFF(date_add(tblContract.checkin, INTERVAL tblContract.contractDuration MONTH), current_date())) >= 0);";
 		try{
 			PreparedStatement ps = con.prepareStatement(sql);
 			ps.setFloat(1,key);

@@ -536,6 +536,7 @@ public class ContractFrm extends javax.swing.JFrame {
         contract.setRoom(cRoom);
         contract.setCheckin(checkInDay.getDate());
         ContractDAO cDAO = new ContractDAO();
+        
         if(cDAO.createContract(contract)){
             JOptionPane.showMessageDialog(this, "Thêm hợp đồng thành công!");
         }
@@ -545,11 +546,11 @@ public class ContractFrm extends javax.swing.JFrame {
         int waterCounter = Integer.parseInt(waterCounterText.getText());
         float waterFee = Float.parseFloat(waterFeeText.getText());
         
-        MonthlyService ms1 = new MonthlyService(1, "Gửi xe", "Tiền gửi xe tính theo số xe");
-        MonthlyService ms2 = new MonthlyService(2, "Vệ sinh", "Tiền dọn vệ sinh hàng tháng");
+        MonthlyService ms1 = new MonthlyService(1, "Điện", "Tiền điện 1 tháng");
+        MonthlyService ms2 = new MonthlyService(2, "Nước", "Tiền nước tính theo khối");
         
-        StaticService ss1 = new StaticService(1, "Điện", "Tiền điện 1 tháng");
-        StaticService ss2 = new StaticService(2, "Nước", "Tiền nước tính theo khối");
+        StaticService ss1 = new StaticService(1, "Gửi xe", "Tiền gửi xe tính theo số xe");
+        StaticService ss2 = new StaticService(2, "Vệ sinh", "Tiền dọn vệ sinh hàng tháng");
         
         float parkingFee = Float.parseFloat(parkingFeeText.getText());
         float cleaningFee = Float.parseFloat(cleaningFeeText.getText());
