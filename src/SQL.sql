@@ -21,7 +21,7 @@ create table tblRoom(
 
 create table tblBill(
 	id int primary key auto_increment,
-    `month` int,
+    `created` date,
     rentingFee float,
     serviceFee float,
     waternumber float,
@@ -116,7 +116,7 @@ values('101', 1500000, 1, 'Single', 1),
 ('201', 12000000, 2, 'Double', 1),
 ('301', 11500000, 3, 'Single', 1);
 
-insert into tblUser(`name`, address, dateofbirth, identitynumber, phonenumber, `username`, `password`) values('Phạm Kiên', 'Nam Từ Liêm, Hà Nội', 20/07/1999, '0123456789', '0987654321', 'admin', 'admin123');
+insert into tblUser(`name`, address, dateofbirth, identitynumber, phonenumber, `username`, `password`) values('Phạm Kiên', 'Nam Từ Liêm, Hà Nội', 19990720, '0123456789', '0987654321', 'admin', 'admin123');
 
 insert into tblClient(`name`, address, dateofbirth, identitynumber, phonenumber) 
 values('Nguyễn Thắng', 'Thái Bình', 19990128, '0127594736', '098163547'),
@@ -132,7 +132,7 @@ values('Điện', 'Tiền điện 1 tháng'),
 ('Nước', 'Tiền nước tính theo khối');
 
 insert into tblContract(checkin, rentingPrice, deposit, contractDuration, userid, clientid, roomid)
-values(20200501, 1500000, 1500000, 6, 1, 1, 1),
+values(20191001, 1500000, 1500000, 6, 1, 1, 1),
 (20200401, 2000000, 2000000, 6, 1, 2, 2),
 (20200601, 1500000, 1500000, 6, 1, 3, 3);
 
@@ -155,12 +155,68 @@ insert into tblRoomStaticService(price, `number`, staticserviceid, roomid) value
 (10000, 0, 2, 3);
 
 
-insert into tblBill(`month`, rentingFee, serviceFee, waterNumber, electricityNumber, debt, billStatus, contractid) values
-(4, 2000000, 110000, 5, 80, 0, 1, 1),
-(5, 1500000, 60000, 7, 120, 0, 1, 1),
-(5, 2000000, 100000, 3, 185, 0, 1, 2),
-(6, 1500000, 60000, 2, 140, 0, 0, 1),
-(6, 2000000, 110000, 7, 200, 0, 0, 2),
-(6, 1500000, 50000, 8, 95, 0, 0, 3);
+insert into tblBill(`created`, rentingFee, serviceFee, waterNumber, electricityNumber, debt, billStatus, contractid) values
+(20191201, 2000000, 110000, 2, 80, 0, 1, 1),
+(20200101, 2000000, 110000, 3, 90, 0, 1, 1),
+(20200201, 2000000, 110000, 4, 70, 0, 1, 1),
+(20200301, 2000000, 110000, 5, 90, 0, 1, 1),
+(20200401, 2000000, 110000, 6, 100, 0, 1, 1),
+(20200501, 1500000, 60000, 7, 120, 0, 1, 1),
+(20200501, 2000000, 100000, 3, 185, 0, 1, 2),
+(current_date(), 1500000, 60000, 2, 140, 0, 0, 1),
+(20200601, 2000000, 110000, 7, 200, 0, 0, 2);
 
-SELECT * FROM tblBill;
+SELECT MONTH(tblBill.created) as `month`, 
+		YEAR(tblBill.created) as `Year`, 
+		sum((tblBill.rentingFee + tblBill.serviceFee + tblBill.waterNumber*msw.wp + tblBill.electricityNumber*mep.ep - tblBill.debt)) as income 
+FROM tblBill, 
+	tblContract, 
+	(SELECT roomid, price as wp 
+		FROM tblRoomMonthlyService
+        WHERE monthlyserviceid = 2) as msw,
+	(SELECT roomid, price as ep 
+		FROM tblRoomMonthlyService
+        WHERE monthlyserviceid = 1) as mep
+ WHERE tblBill.contractid = tblContract.id AND mep.roomid = tblContract.roomid AND msw.roomid = tblContract.roomid  AND tblBill.billStatus = 1
+GROUP BY MONTH(tblBill.created);
+
+SELECT YEAR(tblBill.created) as `year`, 
+		sum((tblBill.rentingFee + tblBill.serviceFee + tblBill.waterNumber*msw.wp + tblBill.electricityNumber*mep.ep - tblBill.debt)) as income 
+FROM tblBill, 
+	tblContract, 
+	(SELECT roomid, price as wp 
+		FROM tblRoomMonthlyService
+        WHERE monthlyserviceid = 2) as msw,
+	(SELECT roomid, price as ep 
+		FROM tblRoomMonthlyService
+        WHERE monthlyserviceid = 1) as mep
+ WHERE tblBill.contractid = tblContract.id AND mep.roomid = tblContract.roomid AND msw.roomid = tblContract.roomid  AND tblBill.billStatus = 1
+GROUP BY YEAR(tblBill.created);
+
+
+SELECT QUARTER(tblBill.created) as `Quarter`, 
+		YEAR(tblBill.created) as `Year`,  
+        sum((tblBill.rentingFee + tblBill.serviceFee + tblBill.waterNumber*msw.wp + tblBill.electricityNumber*mep.ep - tblBill.debt)) as income 
+FROM tblBill, 
+	tblContract, 
+	(SELECT roomid, price as wp 
+		FROM tblRoomMonthlyService
+        WHERE monthlyserviceid = 2) as msw,
+	(SELECT roomid, price as ep 
+		FROM tblRoomMonthlyService
+        WHERE monthlyserviceid = 1) as mep
+ WHERE tblBill.contractid = tblContract.id AND mep.roomid = tblContract.roomid AND msw.roomid = tblContract.roomid  AND tblBill.billStatus = 1
+GROUP BY QUARTER(tblBill.created);
+
+SELECT (tblBill.created) as `time`, tblBill.id as id, tblBill.contractid as contractid, 
+		(tblBill.rentingFee + tblBill.serviceFee + tblBill.waterNumber*msw.wp + tblBill.electricityNumber*mep.ep - tblBill.debt) as income 
+FROM tblBill, 
+	tblContract, 
+	(SELECT roomid, price as wp 
+		FROM tblRoomMonthlyService
+        WHERE monthlyserviceid = 2) as msw,
+	(SELECT roomid, price as ep 
+		FROM tblRoomMonthlyService
+        WHERE monthlyserviceid = 1) as mep
+ WHERE tblBill.contractid = tblContract.id AND mep.roomid = tblContract.roomid AND msw.roomid = tblContract.roomid  AND tblBill.billStatus = 1 AND MONTH(created) = 5 
+ ORDER BY `time` DESC;

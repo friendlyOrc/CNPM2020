@@ -8,6 +8,7 @@ package view.Bill;
 import dao.BillDAO;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +28,7 @@ import model.Bill;
 import model.RoomMonthlyService;
 import model.RoomStaticService;
 import model.User;
+import view.user.ManagerHomeFrm;
 
 /**
  *
@@ -37,7 +39,7 @@ public class EditBillFrm extends javax.swing.JFrame implements ActionListener{
     private JLabel lbId, lbRoomName, lbClient, lbMonth;
     private JTextField txtPaid, txtRFee, txtDebt;
     private JTable tblMService, tblSService;
-    private JButton btnConfirm, btnReset;
+    private JButton btnConfirm, btnReset, btnBack;
     private User user;
     DefaultTableModel tableModel, tableModel2;
 	
@@ -60,7 +62,7 @@ public class EditBillFrm extends javax.swing.JFrame implements ActionListener{
 
         lbId = new JLabel(bill.getId() + "");
         lbRoomName = new JLabel(bill.getContract().getRoom().getName() + "");
-        lbMonth = new JLabel(bill.getMonth() + "");
+        lbMonth = new JLabel(bill.getCreated().getMonth() + 1 + "");
         txtRFee = new JTextField(); txtRFee.setText(bill.getRentingFee() + "");
         txtDebt = new JTextField(); txtDebt.setText(bill.getDebt() + "");
         lbClient = new JLabel(bill.getContract().getClient().getName() + "");
@@ -77,6 +79,7 @@ public class EditBillFrm extends javax.swing.JFrame implements ActionListener{
         
         btnConfirm = new JButton("Sửa");
         btnReset = new JButton("Làm mới");
+        btnBack = new JButton("Quay lại");
 
         JPanel mainContent = new JPanel();
         mainContent.setLayout(new GridLayout(4,1));
@@ -113,17 +116,20 @@ public class EditBillFrm extends javax.swing.JFrame implements ActionListener{
         mainContent.add(content3);
         
         JPanel content4 = new JPanel();
-        content4.setLayout(new GridLayout(3, 2));
+        content4.setLayout(new FlowLayout());
         
-        txtPaid = new JTextField(15);
-        
-        content4.add(btnConfirm);                       content4.add(btnReset);
+        content4.add(btnConfirm);       
+        content4.add(btnReset);   
+        content4.add(btnBack);
         
         mainContent.add(content4);
+        
         
         pnMain.add(mainContent);		  
         btnConfirm.addActionListener(this);
         btnReset.addActionListener(this);
+        btnBack.addActionListener(this);
+        
 		
         this.setContentPane(pnMain);
         this.setSize(500,600);				
@@ -222,6 +228,12 @@ public class EditBillFrm extends javax.swing.JFrame implements ActionListener{
 
             (new BillInfoFrm(user, bill)).setVisible(true);
             this.dispose();
+        }
+        
+        if(btnClicked.equals(btnBack)){
+            (new BillInfoFrm(user, bill)).setVisible(true);
+            this.dispose();
+            
         }
     }
 

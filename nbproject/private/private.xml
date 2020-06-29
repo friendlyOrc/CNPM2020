@@ -4,10 +4,9 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/F:/ThirdYear/2nd/CNPM/QLKT25062020/src/view/Bill/BillInfoFrm.java</file>
+            <file>file:/F:/ThirdYear/2nd/CNPM/QLKT25062020/src/model/IncomeStat.java</file>
+            <file>file:/F:/ThirdYear/2nd/CNPM/QLKT25062020/src/dao/IncomeStatDAO.java</file>
             <file>file:/F:/ThirdYear/2nd/CNPM/QLKT25062020/src/dao/BillDAO.java</file>
-            <file>file:/F:/ThirdYear/2nd/CNPM/QLKT25062020/src/view/user/LoginFrm.java</file>
-            <file>file:/F:/ThirdYear/2nd/CNPM/QLKT25062020/test/test/unit/BillDAOTest.java</file>
-            <file>file:/F:/ThirdYear/2nd/CNPM/QLKT25062020/src/view/Bill/SearchBillFrm.java</file>
         </group>
     </open-files>
 </project-private>

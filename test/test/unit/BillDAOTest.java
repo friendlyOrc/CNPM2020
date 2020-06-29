@@ -43,67 +43,33 @@ public class BillDAOTest {
     }
     @Test	
     public void testUpdateBill1(){
-            Connection con = DAO.con;
-            float newRentingFee = 1800000;
-            float newENumber = 80;
-            float newWNumber = 7;
-            float newSV = 150000;
-            String key = "1";
-
-            try{
-                    con.setAutoCommit(false);
-                    ArrayList<Bill> lb = bd.searchBill(key);
-
-                    lb.get(0).setElectricityNumber(newENumber);
-                    lb.get(0).setWaterNumber(newWNumber);
-                    lb.get(0).setRentingFee(newRentingFee);
-                    lb.get(0).setServiceFee(newSV);
-                    bd.updateInfoBill(lb.get(0));
-
-
-                    //test the new updated row
-                    lb.clear();
-                    lb = bd.searchBill(key);
-                    Assert.assertEquals(lb.get(0).getId(),Integer.parseInt(key));
-                    
-                    Assert.assertEquals(newRentingFee, lb.get(0).getRentingFee(), 0.000001f);
-                    Assert.assertEquals(newENumber, lb.get(0).getElectricityNumber(), 0.000001f);
-                    Assert.assertEquals(newWNumber, lb.get(0).getWaterNumber(), 0.000001f);
-                    Assert.assertEquals(newSV, lb.get(0).getServiceFee(), 0.000001f);
-            }catch(Exception e){
-                    e.printStackTrace();
-            }finally{
-                    try{
-                            con.rollback();
-                            con.setAutoCommit(true);
-                    }catch(Exception ex){
-                            ex.printStackTrace();
-                    }
-            }
-            return;
-    }
-    @Test
-    public void testUpdateBill2(){
         Connection con = DAO.con;
-        float newNumber = 5;
+        float newRentingFee = 1800000;
+        float newENumber = 80;
+        float newWNumber = 7;
+        float newSV = 150000;
         String key = "1";
 
         try{
-                con.setAutoCommit(false);
-                ArrayList<Bill> lb = bd.searchBill(key);
-                lb.get(0).getContract().getRooms().get(0).getRrsService().get(0).setNumber(newNumber);
-                lb.get(0).getContract().getRooms().get(0).getRrsService().get(1).setNumber(newNumber);
+            con.setAutoCommit(false);
+            ArrayList<Bill> lb = bd.searchBill(key);
 
-                bd.updateInfoBill(lb.get(0));
+            lb.get(0).setElectricityNumber(newENumber);
+            lb.get(0).setWaterNumber(newWNumber);
+            lb.get(0).setRentingFee(newRentingFee);
+            lb.get(0).setServiceFee(newSV);
+            bd.updateInfoBill(lb.get(0));
 
-                //test the new updated row
-                lb.clear();
-                lb = bd.searchBill(key);
-                Assert.assertEquals(lb.get(0).getId(),Integer.parseInt(key));
 
-                Assert.assertEquals(newNumber, lb.get(0).getContract().getRooms().get(0).getRrsService().get(0).getNumber(), 0.000001f);
-                Assert.assertEquals(newNumber, lb.get(0).getContract().getRooms().get(0).getRrsService().get(1).getNumber(), 0.000001f);
+            //test the new updated row
+            lb.clear();
+            lb = bd.searchBill(key);
+            Assert.assertEquals(lb.get(0).getId(),Integer.parseInt(key));
 
+            Assert.assertEquals(newRentingFee, lb.get(0).getRentingFee(), 0.000001f);
+            Assert.assertEquals(newENumber, lb.get(0).getElectricityNumber(), 0.000001f);
+            Assert.assertEquals(newWNumber, lb.get(0).getWaterNumber(), 0.000001f);
+            Assert.assertEquals(newSV, lb.get(0).getServiceFee(), 0.000001f);
         }catch(Exception e){
                 e.printStackTrace();
         }finally{
@@ -117,18 +83,52 @@ public class BillDAOTest {
         return;
     }
     @Test
+    public void testUpdateBill2(){
+        Connection con = DAO.con;
+        float newNumber = 5;
+        String key = "1";
+
+        try{
+            con.setAutoCommit(false);
+            ArrayList<Bill> lb = bd.searchBill(key);
+            lb.get(0).getContract().getRoom().getListSS().get(0).setNumber(newNumber);
+            lb.get(0).getContract().getRoom().getListSS().get(1).setNumber(newNumber);
+
+            bd.updateInfoBill(lb.get(0));
+
+            //test the new updated row
+            lb.clear();
+            lb = bd.searchBill(key);
+            Assert.assertEquals(lb.get(0).getId(),Integer.parseInt(key));
+
+            Assert.assertEquals(newNumber, lb.get(0).getContract().getRoom().getListSS().get(0).getNumber(), 0.000001f);
+            Assert.assertEquals(newNumber, lb.get(0).getContract().getRoom().getListSS().get(1).getNumber(), 0.000001f);
+
+        }catch(Exception e){
+                e.printStackTrace();
+        }finally{
+            try{
+                con.rollback();
+                con.setAutoCommit(true);
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+        }
+        return;
+    }
+    @Test
     public void testUpdatePaidBill1(){
         Connection con = DAO.con;
-        String key = "1";
+        String key = "2";
 
         try{
                 con.setAutoCommit(false);
                 ArrayList<Bill> lb = bd.searchBill(key);
 
-                float newEN = lb.get(0).getContract().getRooms().get(0).getRrmService().get(0).getNumber() + lb.get(0).getElectricityNumber();
-                float newWN = lb.get(0).getContract().getRooms().get(0).getRrmService().get(1).getNumber() + lb.get(0).getWaterNumber();
+                float newEN = lb.get(0).getContract().getRoom().getListMS().get(0).getNumber() + lb.get(0).getElectricityNumber();
+                float newWN = lb.get(0).getContract().getRoom().getListMS().get(1).getNumber() + lb.get(0).getWaterNumber();
                 
-                bd.updatePaidBill(lb.get(0));
+                bd.updatePaidBill(lb.get(0), lb.get(0).getTotal());
                 
                 
 
@@ -136,8 +136,9 @@ public class BillDAOTest {
                 lb.clear();
                 lb = bd.searchBill(key);
                 Assert.assertEquals(lb.get(0).getId(),Integer.parseInt(key));
-                Assert.assertEquals(lb.get(0).getContract().getRooms().get(0).getRrmService().get(0).getNumber(), newEN, 0.000001f);
-                Assert.assertEquals(lb.get(0).getContract().getRooms().get(0).getRrmService().get(1).getNumber(), newWN, 0.000001f);
+                Assert.assertEquals(lb.get(0).isBillStatus(), true);
+                Assert.assertEquals(lb.get(0).getContract().getRoom().getListMS().get(0).getNumber(), newEN, 0.000001f);
+                Assert.assertEquals(lb.get(0).getContract().getRoom().getListMS().get(1).getNumber(), newWN, 0.000001f);
 
 
 
@@ -147,6 +148,44 @@ public class BillDAOTest {
                 try{
                         con.rollback();
                         con.setAutoCommit(true);
+                }catch(Exception ex){
+                        ex.printStackTrace();
+                }
+        }
+        return;
+    }
+    
+    @Test
+    public void testUpdatePaidBill2(){
+        Connection con = DAO.con;
+        String key = "5";
+
+        try{
+                con.setAutoCommit(false);
+                ArrayList<Bill> lb = bd.searchBill(key);
+
+                float newEN = lb.get(0).getContract().getRoom().getListMS().get(0).getNumber() + lb.get(0).getElectricityNumber();
+                float newWN = lb.get(0).getContract().getRoom().getListMS().get(1).getNumber() + lb.get(0).getWaterNumber();
+                
+                boolean rs = bd.updatePaidBill(lb.get(0), (lb.get(0).getTotal() - 500));
+
+                //test the new updated row
+                lb.clear();
+                lb = bd.searchBill(key);
+                Assert.assertEquals(lb.get(0).getId(),Integer.parseInt(key));
+                Assert.assertEquals(rs, true);
+                Assert.assertEquals(lb.get(0).isBillStatus(), true);
+                Assert.assertEquals(lb.get(0).getContract().getRoom().getListMS().get(0).getNumber(), newEN, 0.000001f);
+                Assert.assertEquals(lb.get(0).getContract().getRoom().getListMS().get(1).getNumber(), newWN, 0.000001f);
+                Assert.assertEquals(lb.get(0).getDebt(), 500, 0.000001f);
+                
+                
+        }catch(Exception e){
+                e.printStackTrace();
+        }finally{
+                try{
+                    con.rollback();
+                    con.setAutoCommit(true);
                 }catch(Exception ex){
                         ex.printStackTrace();
                 }

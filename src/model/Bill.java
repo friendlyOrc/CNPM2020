@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class Bill implements Serializable{
     private int id;
-    private int month;
+    private Date created;
     private float rentingFee;
     private float electricityNumber;
     private float waterNumber;
@@ -19,9 +19,9 @@ public class Bill implements Serializable{
     public Bill() {
     }
 
-    public Bill(int id, int month, float rentingFee, float electricityNumber, float waterNumber, float serviceFee, float debt, float total, Contract contract, boolean billStatus) {
+    public Bill(int id, Date created, float rentingFee, float electricityNumber, float waterNumber, float serviceFee, float debt, float total, Contract contract, boolean billStatus) {
         this.id = id;
-        this.month = month;
+        this.created = created;
         this.rentingFee = rentingFee;
         this.electricityNumber = electricityNumber;
         this.waterNumber = waterNumber;
@@ -40,12 +40,12 @@ public class Bill implements Serializable{
         this.id = id;
     }
 
-    public int getMonth() {
-        return month;
+    public Date getCreated() {
+        return created;
     }
 
-    public void setMonth(int month) {
-        this.month = month;
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
     public float getRentingFee() {
@@ -112,6 +112,8 @@ public class Bill implements Serializable{
         this.billStatus = billStatus;
     }
 
+    
+    
     
     
     

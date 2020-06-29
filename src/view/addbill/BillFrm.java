@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package view.Bill;
+package view.addbill;
 
 import javax.swing.JButton;
 import javax.swing.JTextField;
@@ -37,17 +37,17 @@ import view.user.ManagerHomeFrm;
  *
  * @author HP075
  */
-public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
+public class BillFrm extends javax.swing.JFrame implements ActionListener{
 
     private Bill bill;
     private JLabel lbId, lbRoomName, lbClient, lbMonth, lbRFee, lbSSFee, lbTotal, lbDebt;
     private JTextField txtPaid;
     private JTable tblMService, tblSService;
-    private JButton btnConfirm, btnEdit, btnBack;
+    private JButton btnBack;
     private User user;
 
 
-    public BillInfoFrm(User user, Bill bill){
+    public BillFrm(User user, Bill bill){
         super("Bill info");
         this.user = user;
         this.bill = bill;
@@ -57,31 +57,31 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         pnMain.setLayout(new BoxLayout(pnMain,BoxLayout.Y_AXIS));
         pnMain.add(Box.createRigidArea(new Dimension(0,10)));
 
-        JLabel lblHome = new JLabel("Bill info");
+        JLabel lblHome = new JLabel("Thông tin hoa đơn");
         lblHome.setAlignmentX(Component.CENTER_ALIGNMENT);	
         lblHome.setFont (lblHome.getFont ().deriveFont (20.0f));
         pnMain.add(lblHome);
         pnMain.add(Box.createRigidArea(new Dimension(0,20)));
-        
-        
-//        GET MONTH
 
         lbId = new JLabel(bill.getId() + "");
         lbRoomName = new JLabel(bill.getContract().getRoom().getName() + "");
-        lbMonth = new JLabel(bill.getCreated().getMonth() + 1 + "");
+        int month = bill.getCreated().getMonth() + 1;
+        lbMonth = new JLabel( month + "");
         lbRFee = new JLabel(bill.getRentingFee() + "");
         lbDebt = new JLabel(bill.getDebt()+ "");
         lbClient = new JLabel(bill.getContract().getClient().getName() + "");
-        txtPaid = new JTextField(); txtPaid.setText("");
         
         tblMService = new JTable();
         JScrollPane scrollPane= new  JScrollPane(tblMService);
+//        tblMService.setFillsViewportHeight(false); 
+//        scrollPane.setPreferredSize(new Dimension(scrollPane.getPreferredSize().width, 300));
         
         tblSService = new JTable();
         JScrollPane scrollPane2 = new JScrollPane(tblSService);
+//        tblSService.setFillsViewportHeight(false); 
+//        scrollPane2.setPreferredSize(new Dimension(scrollPane2.getPreferredSize().width, 300));
         
-        btnConfirm = new JButton("Xác nhận");
-        btnEdit = new JButton("Sửa");
+        btnBack = new JButton("Xác nhận");
 
         JPanel mainContent = new JPanel();
         mainContent.setLayout(new GridLayout(4,1));
@@ -90,11 +90,11 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         content1.setLayout(new GridLayout(6,2));
         
         content1.add(new JLabel("Bill ID:"));           content1.add(lbId);
-        content1.add(new JLabel("Room name:")); 	content1.add(lbRoomName);
-        content1.add(new JLabel("Client: "));           content1.add(lbClient);
-        content1.add(new JLabel("Month:"));             content1.add(lbMonth);
-        content1.add(new JLabel("Price:"));             content1.add(lbRFee);
-        content1.add(new JLabel("Debt:"));              content1.add(lbDebt);
+        content1.add(new JLabel("Tên phòng:")); 	content1.add(lbRoomName);
+        content1.add(new JLabel("Khách hàng: "));           content1.add(lbClient);
+        content1.add(new JLabel("Tháng:"));             content1.add(lbMonth);
+        content1.add(new JLabel("Giá phòng:"));             content1.add(lbRFee);
+        content1.add(new JLabel("Tiền nợ:"));              content1.add(lbDebt);
         
         mainContent.add(content1);
         
@@ -102,7 +102,6 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         content2.setLayout(new GridLayout(2, 1));
         
         float total = bill.getRentingFee() + bill.getDebt();
-        System.out.println(total);
         
         String[] columnNames = {"Id", "Tên dịch vụ", "Số tháng trước", "Số tháng này", "Đơn giá", "Thành tiền"};
         String[][] value = new String[2][6];
@@ -121,7 +120,6 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
             value[i][4] = sv.getPrice() + "";
             total += Float.parseFloat(value[i][5]);
         }
-        System.out.println(total);
         DefaultTableModel tableModel = new DefaultTableModel(value, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -148,7 +146,6 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
             value2[i][4] = sv.getNumber()*sv.getPrice() + "";
             total += Float.parseFloat(value2[i][4]);
         }
-        System.out.println(total);
         DefaultTableModel tableModel2 = new DefaultTableModel(value2, columnNames2) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -171,23 +168,13 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         
         txtPaid = new JTextField(15);
         
-        content4.add(new JLabel("Total:"));             content4.add(new JLabel(total + ""));
-        content4.add(new JLabel("Paid: "));             content4.add(txtPaid);
-        content4.add(btnConfirm);                       content4.add(btnEdit);
+        content4.add(new JLabel("Tổng:"));             content4.add(new JLabel(total + ""));
+        content4.add(btnBack); 
         
         mainContent.add(content4);
         
-       
-        
         pnMain.add(mainContent);		  
-        btnConfirm.addActionListener(this);
-        btnEdit.addActionListener(this);
-        
-        btnBack = new JButton("Quay lại");
-        btnBack.addActionListener((ActionListener) this);
-        btnBack.setAlignmentX(Component.CENTER_ALIGNMENT);	
-        pnMain.add(btnBack);
-        pnMain.add(Box.createRigidArea(new Dimension(0,20)));
+        btnBack.addActionListener(this);
 		
         this.setContentPane(pnMain);
         this.setSize(500,600);				
@@ -195,34 +182,18 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
+    private BillFrm() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
             // TODO Auto-generated method stub
             JButton btnClicked = (JButton)e.getSource();
-            if(btnClicked.equals(btnConfirm)){
-                BillDAO bd = new BillDAO();
-                if(txtPaid.getText().isEmpty()){
-                    JOptionPane.showMessageDialog(this, "Vui lòng điền số tiền thanh toán");
-                }else if(bd.updatePaidBill(bill, Float.parseFloat(txtPaid.getText()))) {
-                    JOptionPane.showMessageDialog(this, "Xác nhận thanh toán thành công");
-                    (new ManagerHomeFrm(user)).setVisible(true);
-                    this.dispose();
-                }else{
-                    JOptionPane.showMessageDialog(this, "Lỗi");
-                    (new ManagerHomeFrm(user)).setVisible(true);
-                    this.dispose();
-                }
-            }
-            if(btnClicked.equals(btnEdit)){
-                (new EditBillFrm(user, bill)).setVisible(true);
-                this.dispose();
-            }
-            
             if(btnClicked.equals(btnBack)){
-                (new SearchBillFrm(user)).setVisible(true);
-                this.dispose();
-
+		(new ManagerHomeFrm(user)).setVisible(true);
+		this.dispose();
             }
     }
     @SuppressWarnings("unchecked")
@@ -243,11 +214,7 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         );
 
         pack();
-    }// </editor-fold>                        
-
-    
-    
-
+    }// </editor-fold>                               
     // Variables declaration - do not modify                     
     // End of variables declaration                   
 }
