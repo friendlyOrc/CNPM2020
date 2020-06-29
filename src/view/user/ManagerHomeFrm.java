@@ -16,9 +16,10 @@ import model.User;
 import view.Bill.SearchBillFrm;
 import view.Stat.SelectStatFrm;
 import view.addbill.ManagerBillFrm;
+import view.contract.SearchRoomFrm;
 
 public class ManagerHomeFrm extends JFrame implements ActionListener{
-    private JButton btnCf, btnBill, btnStat;
+    private JButton btnCf, btnBill, btnStat, btnAddC;
     private User user;
 
     public ManagerHomeFrm(User user) {
@@ -59,8 +60,12 @@ public class ManagerHomeFrm extends JFrame implements ActionListener{
         btnStat.setAlignmentX(Component.CENTER_ALIGNMENT);	
         btnStat.addActionListener(this);
         listPane.add(btnStat);
+        listPane.add(Box.createRigidArea(new Dimension(0,10)));
 
-
+        btnAddC = new JButton("Tạo hợp đồng mới");
+        btnAddC.setAlignmentX(Component.CENTER_ALIGNMENT);	
+        btnAddC.addActionListener(this);
+        listPane.add(btnAddC);
 
         this.setSize(600,300);				
         this.setLocation(200,10);
@@ -79,6 +84,9 @@ public class ManagerHomeFrm extends JFrame implements ActionListener{
             this.dispose();
         }else if((e.getSource() instanceof JButton)&&(((JButton)e.getSource()).equals(btnBill))){
             (new ManagerBillFrm(user)).setVisible(true);
+            this.dispose();
+        }else if((e.getSource() instanceof JButton)&&(((JButton)e.getSource()).equals(btnAddC))){
+            (new SearchRoomFrm(user)).setVisible(true);
             this.dispose();
         }else {
             JOptionPane.showMessageDialog(this, "Chức năng đang được hoàn thiện!");

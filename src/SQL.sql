@@ -112,9 +112,9 @@ ADD FOREIGN KEY (roomid) REFERENCES tblroom(id);
 insert into tblrentalflat(address, numberofroom, numberofperson, `description`) values('Nam Từ Liêm, Hà Nội', 5, 4, 'Nhà mặt đường');
 
 insert into tblroom(`name`, price, floor, `type`, rentalflatid) 
-values('101', 1500000, 1, 'Single', 1),
-('201', 12000000, 2, 'Double', 1),
-('301', 11500000, 3, 'Single', 1);
+values('401', 1500000, 1, 'Single', 1),
+('501', 1200000, 2, 'Double', 1),
+('601', 1150000, 3, 'Single', 1);
 
 insert into tblUser(`name`, address, dateofbirth, identitynumber, phonenumber, `username`, `password`) values('Phạm Kiên', 'Nam Từ Liêm, Hà Nội', 19990720, '0123456789', '0987654321', 'admin', 'admin123');
 
@@ -220,3 +220,11 @@ FROM tblBill,
         WHERE monthlyserviceid = 1) as mep
  WHERE tblBill.contractid = tblContract.id AND mep.roomid = tblContract.roomid AND msw.roomid = tblContract.roomid  AND tblBill.billStatus = 1 AND MONTH(created) = 5 
  ORDER BY `time` DESC;
+SELECT DATEDIFF(20100825, 20110825) AS DateDiff;
+SELECT * 
+FROM tblRoom 
+WHERE (NOT EXISTS(SELECT id FROM tblContract WHERE roomid = tblRoom.id ) AND tblRoom.price <= 2000000)
+	OR EXISTS(SELECT * FROM tblContract 
+    WHERE tblContract.roomid = tblRoom.id 
+	AND tblRoom.price <= 2000000 
+    AND (DATEDIFF(20230101, date_add(tblContract.checkin, INTERVAL tblContract.contractDuration MONTH))) >= 0);
