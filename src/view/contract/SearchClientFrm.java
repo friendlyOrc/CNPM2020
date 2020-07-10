@@ -5,6 +5,7 @@
  */
 package view.contract;
 
+import Exception.BlankException;
 import dao.ClientDAO;
 import dao.RoomDAO;
 import java.awt.Component;
@@ -21,6 +22,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -125,6 +127,14 @@ public class SearchClientFrm extends JFrame implements ActionListener {
         }
         if(btnClicked.equals(btnSearch)){
             if((txtKey.getText() == null)||(txtKey.getText().length() == 0)){
+                return;
+            }
+            try{
+                if(txtKey.getText() == null){
+                    throw new BlankException();
+                }
+            }catch(BlankException e1){
+                JOptionPane.showMessageDialog(this,"Không được để trống các ô!");
                 return;
             }
             ClientDAO cd = new ClientDAO();

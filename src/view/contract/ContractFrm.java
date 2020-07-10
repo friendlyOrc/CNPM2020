@@ -5,6 +5,7 @@
  */
 package view.contract;
 
+import Exception.BlankException;
 import dao.ContractDAO;
 import dao.RoomMonthlyServiceDAO;
 import dao.RoomStaticServiceDAO;
@@ -494,38 +495,17 @@ public class ContractFrm extends javax.swing.JFrame {
 
     private void confirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmActionPerformed
         // TODO add your handling code here:
-//        while(1>0){
-//        try{
-//            if(checkInDay.toString().isEmpty()||depositText.toString().isEmpty() || electricCounterText.toString().isEmpty() || electricityFeeText.toString().isEmpty() || waterCounterText.toString().isEmpty() || waterFeeText.toString().isEmpty()){
-//                throw new BlankException();
-//            }
-//            else break;
-//        }catch(BlankException e){
-//            JOptionPane.showMessageDialog(this, "Không được để trống các ô dữ liệu");
-//            }
-//        }
-//        
-//        while(1>0){
-//        try{
-//            if(parkingFeeText.toString().isEmpty() || cleaningFeeText.toString().isEmpty() || duration.toString().isEmpty()){
-//                throw new BlankException();
-//            }
-//            else break;
-//        }catch(BlankException e){
-//            JOptionPane.showMessageDialog(this,"Không được để trống các ô dữ liệu");
-//            }
-//        }
-
-//        while(1>0){
-//            try{
-//                if(duration.toString().isEmpty()){
-//                    throw new BlankException();
-//                }
-//                else break;
-//            }catch(BlankException e){
-//                JOptionPane.showMessageDialog(this, "abc");
-//            }
-//        }
+        
+        try{
+            if(checkInDay.getDate() == null || depositText.getText() == null || electricCounterText.getText() == null
+                    || electricityFeeText.getText() == null || waterCounterText.getText() == null
+                    || cleaningFeeText.getText() == null || parkingFeeText.getText() == null){
+                throw new BlankException();
+            }
+        }catch(BlankException e1){
+            JOptionPane.showMessageDialog(this,"Không được để trống các ô!");
+            return;
+        }
 
         Contract contract = new Contract();
         contract.setClient(cClient);

@@ -90,11 +90,11 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         content1.setLayout(new GridLayout(6,2));
         
         content1.add(new JLabel("Bill ID:"));           content1.add(lbId);
-        content1.add(new JLabel("Room name:")); 	content1.add(lbRoomName);
-        content1.add(new JLabel("Client: "));           content1.add(lbClient);
-        content1.add(new JLabel("Month:"));             content1.add(lbMonth);
-        content1.add(new JLabel("Price:"));             content1.add(lbRFee);
-        content1.add(new JLabel("Debt:"));              content1.add(lbDebt);
+        content1.add(new JLabel("Tên phòng:")); 	content1.add(lbRoomName);
+        content1.add(new JLabel("Tên khách hàng: "));           content1.add(lbClient);
+        content1.add(new JLabel("Tháng:"));             content1.add(lbMonth);
+        content1.add(new JLabel("Giá phòng:"));             content1.add(lbRFee);
+        content1.add(new JLabel("Nợ tháng trước:"));              content1.add(lbDebt);
         
         mainContent.add(content1);
         
@@ -171,8 +171,8 @@ public class BillInfoFrm extends javax.swing.JFrame implements ActionListener{
         
         txtPaid = new JTextField(15);
         
-        content4.add(new JLabel("Total:"));             content4.add(new JLabel(total + ""));
-        content4.add(new JLabel("Paid: "));             content4.add(txtPaid);
+        content4.add(new JLabel("Tổng tiền:"));             content4.add(new JLabel(total + ""));
+        content4.add(new JLabel("Số tiền thanh toán: "));             content4.add(txtPaid);
         content4.add(btnConfirm);                       content4.add(btnEdit);
         
         mainContent.add(content4);

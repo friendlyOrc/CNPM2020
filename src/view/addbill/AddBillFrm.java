@@ -82,13 +82,8 @@ public class AddBillFrm extends JFrame implements ActionListener{
                     txtLMWater.setText(Float.toString(numberWater));
                     numberElectricity = contract.getRoom().getListMS().get(0).getNumber();
                     txtLMElectricity.setText(Float.toString(numberElectricity));
-                    Bill b = new Bill();
                     BillDAO bd = new BillDAO();
-                    b = bd.searchBill(contract.getId());
-                    if(b != null){
-                        debt = b.getDebt();
-                    }
-                    else debt = 0;
+                    debt = bd.searchBill(contract.getId());
 		}
 	}
 

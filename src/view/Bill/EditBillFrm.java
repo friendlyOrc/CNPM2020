@@ -88,11 +88,11 @@ public class EditBillFrm extends javax.swing.JFrame implements ActionListener{
         content1.setLayout(new GridLayout(6,2));
         
         content1.add(new JLabel("Bill ID:"));           content1.add(lbId);
-        content1.add(new JLabel("Room name:")); 	content1.add(lbRoomName);
-        content1.add(new JLabel("Client: "));           content1.add(lbClient);
-        content1.add(new JLabel("Month:"));             content1.add(lbMonth);
-        content1.add(new JLabel("Price:"));             content1.add(txtRFee);
-        content1.add(new JLabel("Debt:"));              content1.add(txtDebt);
+        content1.add(new JLabel("Tên phòng:")); 	content1.add(lbRoomName);
+        content1.add(new JLabel("Tên khách hàng: "));           content1.add(lbClient);
+        content1.add(new JLabel("Tháng:"));             content1.add(lbMonth);
+        content1.add(new JLabel("Giá phòng:"));             content1.add(txtRFee);
+        content1.add(new JLabel("Nợ tháng trước:"));              content1.add(txtDebt);
         
         mainContent.add(content1);
         
@@ -205,29 +205,33 @@ public class EditBillFrm extends javax.swing.JFrame implements ActionListener{
                 return;
         }
         if(btnClicked.equals(btnConfirm)){
-            bill.setRentingFee(Float.parseFloat(txtRFee.getText()));
-            bill.setDebt(Float.parseFloat(txtDebt.getText()));
-            float OEN = bill.getContract().getRoom().getListMS().get(0).getNumber();
-            float OWN = bill.getContract().getRoom().getListMS().get(1).getNumber();
-            bill.setElectricityNumber(Float.parseFloat(tblMService.getValueAt(0, 3).toString()) - OEN);
-            bill.setWaterNumber(Float.parseFloat(tblMService.getValueAt(1, 3).toString()) - OWN);
-            
-            bill.getContract().getRoom().getListMS().get(0).setPrice(Float.parseFloat(tblMService.getValueAt(0, 4).toString()));
-            
-            bill.getContract().getRoom().getListMS().get(1).setPrice(Float.parseFloat(tblMService.getValueAt(1, 4).toString()));
+            if(txtRFee.getText().isBlank() || txtDebt.getText().isBlank()){
+                JOptionPane.showMessageDialog(this, "Không được để trống thông tin!");
+            }else{
+                bill.setRentingFee(Float.parseFloat(txtRFee.getText()));
+                bill.setDebt(Float.parseFloat(txtDebt.getText()));
+                float OEN = bill.getContract().getRoom().getListMS().get(0).getNumber();
+                float OWN = bill.getContract().getRoom().getListMS().get(1).getNumber();
+                bill.setElectricityNumber(Float.parseFloat(tblMService.getValueAt(0, 3).toString()) - OEN);
+                bill.setWaterNumber(Float.parseFloat(tblMService.getValueAt(1, 3).toString()) - OWN);
 
-            int sNum = bill.getContract().getRoom().getListSS().size();
-            for(int i = 0; i < sNum; i++){
-                bill.getContract().getRoom().getListSS().get(i).setNumber(Float.parseFloat(tblSService.getValueAt(i, 2).toString()));
-                bill.getContract().getRoom().getListSS().get(i).setPrice(Float.parseFloat(tblSService.getValueAt(i, 3).toString()));
+                bill.getContract().getRoom().getListMS().get(0).setPrice(Float.parseFloat(tblMService.getValueAt(0, 4).toString()));
+
+                bill.getContract().getRoom().getListMS().get(1).setPrice(Float.parseFloat(tblMService.getValueAt(1, 4).toString()));
+
+                int sNum = bill.getContract().getRoom().getListSS().size();
+                for(int i = 0; i < sNum; i++){
+                    bill.getContract().getRoom().getListSS().get(i).setNumber(Float.parseFloat(tblSService.getValueAt(i, 2).toString()));
+                    bill.getContract().getRoom().getListSS().get(i).setPrice(Float.parseFloat(tblSService.getValueAt(i, 3).toString()));
+                }
+                BillDAO bd = new BillDAO();
+                bd.updateInfoBill(bill);
+
+                JOptionPane.showMessageDialog(this, "Sửa Bill thành công!");
+
+                (new BillInfoFrm(user, bill)).setVisible(true);
+                this.dispose();
             }
-            BillDAO bd = new BillDAO();
-            bd.updateInfoBill(bill);
-
-            JOptionPane.showMessageDialog(this, "Sửa Bill thành công!");
-
-            (new BillInfoFrm(user, bill)).setVisible(true);
-            this.dispose();
         }
         
         if(btnClicked.equals(btnBack)){

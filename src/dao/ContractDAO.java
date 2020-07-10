@@ -56,7 +56,7 @@ public class ContractDAO extends DAO{
     
     public ArrayList<Contract> getAllContract(){
 		ArrayList<Contract> result = new ArrayList<Contract>();
-		String sql = "SELECT * FROM tblcontract";
+		String sql = "SELECT * FROM tblcontract ORDER BY checkin DESC";
 		try{
 			PreparedStatement ps = con.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
@@ -64,10 +64,16 @@ public class ContractDAO extends DAO{
 			while(rs.next()){
                             Contract c = new Contract();
                             Room r = new Room();
+                            User u = new User();
+                            Client cl = new Client();
                             r.setId(rs.getInt("roomid"));
+                            u.setId(rs.getInt("userid"));
+                            cl.setId(rs.getInt("clientid"));
                             c.setCheckin(rs.getDate("checkin"));
                             c.setContractDuration(rs.getInt("contractduration"));
                             c.setRoom(r);
+                            c.setUser(u);
+                            c.setClient(cl);
                             result.add(c);
 			}
 		}catch(Exception e){

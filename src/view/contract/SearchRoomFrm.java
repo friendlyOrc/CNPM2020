@@ -28,12 +28,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import javax.swing.JFormattedTextField;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import model.Contract;
 import model.Room;
 import model.User;
 import view.user.ManagerHomeFrm;
-
+import Exception.BlankException;
 public class SearchRoomFrm extends JFrame implements ActionListener{
 	private ArrayList<Room> listRoom;
         ArrayList<Room> listRoom1;
@@ -126,8 +127,14 @@ public class SearchRoomFrm extends JFrame implements ActionListener{
                     m.setVisible(true);
                 }
 		if(btnClicked.equals(btnSearch)){
-			if((price.getText() == null)||(price.getText().length() == 0))
-				return;
+                        try{
+                            if(price.getText() == null || getDateChooser.getDate() == null){
+                                throw new BlankException();
+                            }
+                        }catch(BlankException e1){
+                            JOptionPane.showMessageDialog(this,"Không được để trống các ô!");
+                            return;
+                        }
                         chosenDate = getDateChooser.getDate();
                         System.out.println(chosenDate);
 			RoomDAO rd = new RoomDAO();

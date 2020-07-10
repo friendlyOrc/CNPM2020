@@ -39,7 +39,7 @@ create table tblClient(
     identitynumber varchar(255),
     phonenumber varchar(255)
 );
-
+select * from tblclient;
 create table tblContract(
 	id int primary key auto_increment,
     checkin date,
@@ -50,7 +50,7 @@ create table tblContract(
     clientid int,
     roomid int
 );
-
+select * from tblroom;
 create table tblStaticService(
 	id int primary key auto_increment,
     `name` varchar(255),
@@ -112,9 +112,12 @@ ADD FOREIGN KEY (roomid) REFERENCES tblroom(id);
 insert into tblrentalflat(address, numberofroom, numberofperson, `description`) values('Nam Từ Liêm, Hà Nội', 5, 4, 'Nhà mặt đường');
 
 insert into tblroom(`name`, price, floor, `type`, rentalflatid) 
-values('401', 1500000, 1, 'Single', 1),
-('501', 1200000, 2, 'Double', 1),
-('601', 1150000, 3, 'Single', 1);
+values('101', 1500000, 1, 'Single', 1),
+('201', 2000000, 2, 'Double', 1),
+('301', 1500000, 3, 'Single', 1),
+('401', 2000000, 4, 'Double', 1),
+('501', 1200000, 5, 'Double', 1),
+('601', 1150000, 6, 'Single', 1);
 
 insert into tblUser(`name`, address, dateofbirth, identitynumber, phonenumber, `username`, `password`) values('Phạm Kiên', 'Nam Từ Liêm, Hà Nội', 19990720, '0123456789', '0987654321', 'admin', 'admin123');
 
@@ -123,17 +126,20 @@ values('Nguyễn Thắng', 'Thái Bình', 19990128, '0127594736', '098163547'),
 ('Hoàng Khải', 'Hà Nội', 19990404, '0765434562', '092237682'),
 ('Hoàng Tâm', 'Hà Nội', 19991012, '1234785902', '096917476');
 
-insert into tblStaticService(`name`, `description`) 
+insert into tblStaticService(price, `name`, `description`) 
 values('Gửi xe', 'Tiền gửi xe tính theo số xe'),
 ('Vệ sinh', 'Tiền dọn vệ sinh hàng tháng');
+select * from tblMonthlyService;
 
 insert into tblMonthlyService(`name`, `description`) 
 values('Điện', 'Tiền điện 1 tháng'),
 ('Nước', 'Tiền nước tính theo khối');
 
+
+
 insert into tblContract(checkin, rentingPrice, deposit, contractDuration, userid, clientid, roomid)
 values(20191001, 1500000, 1500000, 6, 1, 1, 1),
-(20200401, 2000000, 2000000, 6, 1, 2, 2),
+(20200101, 2000000, 2000000, 6, 1, 2, 2),
 (20200601, 1500000, 1500000, 6, 1, 3, 3);
 
 select * from tblcontract;
@@ -158,13 +164,18 @@ insert into tblRoomStaticService(price, `number`, staticserviceid, roomid) value
 insert into tblBill(`created`, rentingFee, serviceFee, waterNumber, electricityNumber, debt, billStatus, contractid) values
 (20191201, 2000000, 110000, 2, 80, 0, 1, 1),
 (20200101, 2000000, 110000, 3, 90, 0, 1, 1),
+(20200101, 2000000, 100000, 3, 185, 200000, 1, 2),
 (20200201, 2000000, 110000, 4, 70, 0, 1, 1),
+(20200201, 2000000, 100000, 3, 185, 200000, 1, 2),
 (20200301, 2000000, 110000, 5, 90, 0, 1, 1),
+(20200301, 2000000, 100000, 3, 185, 200000, 1, 2),
 (20200401, 2000000, 110000, 6, 100, 0, 1, 1),
+(20200401, 2000000, 100000, 3, 185, 200000, 1, 2),
 (20200501, 1500000, 60000, 7, 120, 0, 1, 1),
-(20200501, 2000000, 100000, 3, 185, 0, 1, 2),
-(current_date(), 1500000, 60000, 2, 140, 0, 0, 1),
-(20200601, 2000000, 110000, 7, 200, 0, 0, 2);
+(20200501, 2000000, 100000, 3, 185, 200000, 1, 2),
+(20200601, 1500000, 60000, 2, 140, 0, 0, 1);
+
+SELECT * FROM tblBill;
 
 SELECT MONTH(tblBill.created) as `month`, 
 		YEAR(tblBill.created) as `Year`, 
@@ -220,11 +231,15 @@ FROM tblBill,
         WHERE monthlyserviceid = 1) as mep
  WHERE tblBill.contractid = tblContract.id AND mep.roomid = tblContract.roomid AND msw.roomid = tblContract.roomid  AND tblBill.billStatus = 1 AND MONTH(created) = 5 
  ORDER BY `time` DESC;
-SELECT DATEDIFF(20100825, 20110825) AS DateDiff;
-SELECT * 
+SELECT (DATEDIFF(20200701, date_add(20200611, INTERVAL 6 MONTH))) AS DateDiff;
+SELECT * from tblbill
 FROM tblRoom 
-WHERE (NOT EXISTS(SELECT id FROM tblContract WHERE roomid = tblRoom.id ) AND tblRoom.price <= 2000000)
+WHERE (NOT EXISTS(SELECT id FROM tblContract WHERE roomid = tblRoom.id ) AND tblRoom.price <= 3000000)
 	OR EXISTS(SELECT * FROM tblContract 
     WHERE tblContract.roomid = tblRoom.id 
-	AND tblRoom.price <= 2000000 
-    AND (DATEDIFF(20230101, date_add(tblContract.checkin, INTERVAL tblContract.contractDuration MONTH))) >= 0);
+	AND (tblRoom.price <= 3000000) 
+    AND (DATEDIFF(20200629, date_add(tblContract.checkin, INTERVAL tblContract.contractDuration MONTH))) >= 0
+    AND (DATEDIFF(date_add(tblContract.checkin, INTERVAL tblContract.contractDuration MONTH), current_date())) >= 0);
+select * from tblContract;
+
+SELECT distinct id, clientid, roomid FROM tblContract where not exists(select * from tblbill where tblbill.contractid = tblcontract.id and MONTH(tblbill.created)= 6);

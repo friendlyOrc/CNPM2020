@@ -49,7 +49,7 @@ public class IncomeStatDAO extends DAO{
                     + "ORDER BY `time` DESC;";
         }else if(opt == 2){
             sql = "SELECT QUARTER(tblBill.created) as `quarter`, (tblBill.created) as `time`, \n" +
-                    " sum((tblBill.rentingFee + tblBill.serviceFee + tblBill.waterNumber*msw.wp + tblBill.electricityNumber*mep.ep - tblBill.debt)) as income \n" +
+                    " sum((tblBill.rentingFee + tblBill.serviceFee + tblBill.waterNumber*msw.wp + tblBill.electricityNumber*mep.ep  - tblBill.debt)) as income \n" +
                     " FROM tblBill, tblContract, \n" +
                     "	(SELECT roomid, price as wp \n" +
                     "		FROM tblRoomMonthlyService\n" +
@@ -62,7 +62,7 @@ public class IncomeStatDAO extends DAO{
                     + "ORDER BY `quarter` DESC;";
         }else{
             sql = "SELECT YEAR(tblBill.created) as `year`, (tblBill.created) as `time`, \n" +
-                    " sum((tblBill.rentingFee + tblBill.serviceFee + tblBill.waterNumber*msw.wp + tblBill.electricityNumber*mep.ep - tblBill.debt)) as income \n" +
+                    " sum((tblBill.rentingFee + tblBill.serviceFee + tblBill.waterNumber*msw.wp + tblBill.electricityNumber*mep.ep  - tblBill.debt)) as income \n" +
                     " FROM tblBill, tblContract, \n" +
                     "	(SELECT roomid, price as wp \n" +
                     "		FROM tblRoomMonthlyService\n" +
@@ -88,7 +88,7 @@ public class IncomeStatDAO extends DAO{
                 if(opt == 1){
                     time = is.getTime().getMonth() + 1;
                     sqlBill = "SELECT (tblBill.created) as `time`, tblBill.id as id, tblBill.contractid as contractid, tblBill.debt as debt, \n" +
-                                "(tblBill.rentingFee + tblBill.serviceFee + tblBill.waterNumber*msw.wp + tblBill.electricityNumber*mep.ep - tblBill.debt) as income \n" +
+                                "(tblBill.rentingFee + tblBill.serviceFee + tblBill.waterNumber*msw.wp + tblBill.electricityNumber*mep.ep) as income \n" +
                                 "FROM tblBill, \n" +
                                 "	tblContract, \n" +
                                 "	(SELECT roomid, price as wp \n" +
@@ -102,7 +102,7 @@ public class IncomeStatDAO extends DAO{
                 }else if(opt == 2){
                     time = is.getTime().getMonth()/3 + 1;
                     sqlBill = "SELECT (tblBill.created) as `time`, tblBill.id as id, tblBill.contractid as contractid, tblBill.debt as debt, \n" +
-                                "(tblBill.rentingFee + tblBill.serviceFee + tblBill.waterNumber*msw.wp + tblBill.electricityNumber*mep.ep - tblBill.debt) as income \n" +
+                                "(tblBill.rentingFee + tblBill.serviceFee + tblBill.waterNumber*msw.wp + tblBill.electricityNumber*mep.ep) as income \n" +
                                 "FROM tblBill, \n" +
                                 "	tblContract, \n" +
                                 "	(SELECT roomid, price as wp \n" +
@@ -116,7 +116,7 @@ public class IncomeStatDAO extends DAO{
                 }else{
                     time = is.getTime().getYear() + 1900;
                     sqlBill = "SELECT (tblBill.created) as `time`, tblBill.id as id, tblBill.contractid as contractid, tblBill.debt as debt, \n" +
-                                "(tblBill.rentingFee + tblBill.serviceFee + tblBill.waterNumber*msw.wp + tblBill.electricityNumber*mep.ep - tblBill.debt) as income \n" +
+                                "(tblBill.rentingFee + tblBill.serviceFee + tblBill.waterNumber*msw.wp + tblBill.electricityNumber*mep.ep) as income \n" +
                                 "FROM tblBill, \n" +
                                 "	tblContract, \n" +
                                 "	(SELECT roomid, price as wp \n" +

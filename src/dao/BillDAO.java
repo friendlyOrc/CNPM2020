@@ -179,7 +179,7 @@ public class BillDAO extends DAO{
                 temp.setTotal(temp.getRentingFee()
                             + temp.getElectricityNumber()*temp.getContract().getRoom().getListMS().get(0).getPrice() 
                             + temp.getWaterNumber()*temp.getContract().getRoom().getListMS().get(1).getPrice() 
-                            + temp.getServiceFee() + temp.getDebt());
+                            + temp.getServiceFee());
                 rsBill.add(temp);
             }
         }catch(Exception e) {
@@ -191,6 +191,7 @@ public class BillDAO extends DAO{
     public boolean updatePaidBill(Bill b, float paid){
         boolean rs = false;
         float debt = b.getTotal() - paid;
+        System.out.println(b.getTotal() + " " + paid + " " + debt);
         String sql = "UPDATE tblBill SET billstatus = 1, debt = ? WHERE id = ?";
         String sqlMService = "UPDATE tblRoomMonthlyService SET number = ? WHERE id = ?";
         try{
@@ -271,152 +272,23 @@ public class BillDAO extends DAO{
         return rs;
     }
     
-    public Bill searchBill(int contractid){
-        Bill rsBill = new Bill();
-//        Tìm Bill
-        String sql = "SELECT * FROM tblbill WHERE contractid = ? ORDER BY id DESC LIMIT 1 ";
+    public float searchBill(int contract){
+        Bill b = new Bill();
+        String sql = "SELECT debt FROM tblbill WHERE contractid = ? ORDER BY id DESC LIMIT 1";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, contractid);
+            ps.setInt(1, contract);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
-                Bill temp = new Bill();
-                temp.setId(rs.getInt("id"));
-                temp.setCreated(rs.getDate("created"));
-                temp.setRentingFee(rs.getFloat("rentingfee"));
-                temp.setServiceFee(rs.getFloat("serviceFee"));
-                temp.setWaterNumber(rs.getFloat("waternumber"));
-                temp.setElectricityNumber(rs.getFloat("electricitynumber"));
-
-//  Tìm Contract theo ContractID trong tblBill
-                int contID = rs.getInt("contractid");
-
-                String sql2 = "SELECT * FROM tblContract WHERE id = ?";
-                try{
-                    ps = con.prepareStatement(sql2);
-                    ps.setInt(1, contID);
-                    ResultSet rs2 = ps.executeQuery();
-                    if(rs2.next()){
-                        Contract ct = new Contract();
-                        ct.setId(rs2.getInt("id"));
-                        ct.setUser(new User());
-                        
-                        int clientID = rs2.getInt("clientid");
-
-//  Tìm Client
-                        String sqlClient = "SELECT name FROM tblClient WHERE id = ?";
-                        try{
-                            ps = con.prepareStatement(sqlClient);
-                            ps.setInt(1, clientID);
-                            ResultSet rsC = ps.executeQuery();
-                            if(rsC.next()){
-                                Client c = new Client();
-                                c.setName(rsC.getString("name"));
-                                
-                                ct.setClient(c);
-                            }
-                        }catch(Exception e) {
-                            e.printStackTrace();
-                        }
-
-//  Tìm phòng đã thuê trong Contract
-                        String sql3 = "SELECT id, name FROM tblRoom WHERE id = ?";
-                        try{
-                            ps = con.prepareStatement(sql3);
-                            ps.setInt(1, rs2.getInt("roomid"));
-                            ResultSet rs3 = ps.executeQuery();
-                            Room r = new Room();
-                            if(rs3.next()){
-                                r.setId(rs3.getInt("id"));
-                                r.setName(rs3.getString("name"));
-
-//  Tìm Dịch vụ hàng tháng của phòng đã thuê
-                                String sql5 = "SELECT * FROM tblRoomMonthlyService WHERE roomid = ?";
-                                try{
-                                    ps = con.prepareStatement(sql5);
-                                    ps.setInt(1, r.getId());
-                                    ResultSet rs5 = ps.executeQuery();
-                                    ArrayList<RoomMonthlyService> rrms = new ArrayList();
-                                    while(rs5.next()){
-                                        RoomMonthlyService ms = new RoomMonthlyService();
-                                        ms.setId(rs5.getInt("id"));
-                                        ms.setPrice(rs5.getFloat("price"));
-                                        ms.setNumber(rs5.getInt("number"));
-//                                            Tìm dịch vụ ứng với RRSS
-                                        String sql6 = "SELECT name FROM tblMonthlyService WHERE id = ?";
-                                        try{
-                                            ps = con.prepareStatement(sql6);
-                                            ps.setInt(1,  rs5.getInt("monthlyserviceid"));
-                                            ResultSet rs6 = ps.executeQuery();
-                                            if(rs6.next()){
-                                                MonthlyService s = new MonthlyService();
-                                                s.setName(rs6.getString("name"));
-
-                                                ms.setMonthlyService(s);
-                                            }
-                                        }catch(Exception e) {
-                                            e.printStackTrace();        
-                                        }
-                                        rrms.add(ms);
-                                    }
-                                    r.setListMS(rrms);
-
-                                }catch(Exception e) {
-                                    e.printStackTrace();
-                                }
-//  Tìm dịch vụ cố định cho phòng đã thuê
-                                sql5 = "SELECT * FROM tblRoomStaticService WHERE roomid = ?";
-                                try{
-                                    ps = con.prepareStatement(sql5);
-                                    ps.setInt(1, r.getId());
-                                    ResultSet rs5 = ps.executeQuery();
-                                    ArrayList<RoomStaticService> rrss = new ArrayList();
-                                    while(rs5.next()){
-                                        RoomStaticService ss = new RoomStaticService();
-                                        ss.setId(rs5.getInt("id"));
-                                        ss.setPrice(rs5.getFloat("price"));
-                                        ss.setNumber(rs5.getInt("number"));
-//                                            Tìm dịch vụ ứng với RRSS
-                                        String sql6 = "SELECT name FROM tblStaticService WHERE id = ?";
-                                        try{
-                                            ps = con.prepareStatement(sql6);
-                                            ps.setInt(1, rs5.getInt("staticserviceid"));
-                                            ResultSet rs6 = ps.executeQuery();
-                                            if(rs6.next()){
-                                                StaticService s = new StaticService();
-                                                s.setName(rs6.getString("name"));
-
-                                                ss.setStaticService(s);
-                                            }
-                                        }catch(Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                        rrss.add(ss);
-                                    }
-                                    r.setListSS(rrss);
-                                }catch(Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            ct.setRoom(r);
-                        }catch(Exception e) {
-                            e.printStackTrace();
-                        }
-                        temp.setContract(ct);
-                    }
-                }catch(Exception e) {
-                    e.printStackTrace();
-                }
-                temp.setTotal(temp.getRentingFee()
-                            + temp.getElectricityNumber()*temp.getContract().getRoom().getListMS().get(0).getPrice() 
-                            + temp.getWaterNumber()*temp.getContract().getRoom().getListMS().get(1).getPrice() 
-                            + temp.getServiceFee() + temp.getDebt());
-                rsBill = temp;
+            if(rs.next()) {
+                b.setDebt(rs.getFloat("debt"));
+            }
+            else{
+                return 0;
             }
         }catch(Exception e) {
             e.printStackTrace();
         }
-        return rsBill;
+        return b.getDebt();
     }
     
     public boolean addBill(Bill b){
